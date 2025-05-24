@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+@font-face {
+    font-family: 'Barlow';
+    src: url('./fonts/Barlow-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('./fonts/Poppins-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'Poppins-ExtraBold';
+    src: url('./fonts/Poppins-ExtraBold.ttf');
+}
+
+@font-face {
+    font-family: 'Nunito-ExtraBold';
+    src: url('./fonts/Nunito-ExtraBold.ttf');
+}
+
+@font-face {
+    font-family: 'Nunito-Bold';
+    src: url('./fonts/Nunito-Bold.ttf');
+}
+
+@font-face {
+    font-family: 'Nunito-SemiBold';
+    src: url('./fonts/Nunito-SemiBold.ttf');
+}
+
+@theme {
+    --font-barlow: "Barlow", sans-serif;
+    --font-poppins: "Poppins", sans-serif;
+    --font-poppins-extrabold: "Poppins-ExtraBold", sans-serif;
+    --font-nunito-extrabold: "Nunito-ExtraBold", sans-serif;
+    --font-nunito-bold: "Nunito-Bold", sans-serif;
+    --font-nunito-semibold: "Nunito-SemiBold", sans-serif;
+
+    --color-darkgreen: #304D30; 
+    --color-green: #28A745;
+    --color-softgreen: #BFE5C8;
+    --color-cream: #FAEDC9;
+    --color-lime: #C5EF99;
+    --color-softpurple: #F8ECFE;
+    --color-darkgray: #333333;
+}

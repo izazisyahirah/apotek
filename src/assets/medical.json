@@ -1,0 +1,222 @@
+[
+  {
+    "id": 1,
+    "name": "Termometer Digital",
+    "description": "Alat untuk mengukur suhu tubuh dengan cepat dan akurat.",
+    "details": {
+      "price": "35.000",
+      "image": "https://down-id.img.susercontent.com/file/1bc5007cdd26a7db84f78333b16c60e5",
+      "category": "Pengukur"
+    },
+    "tags": ["Suhu", "Digital", "Kesehatan"]
+  },
+  {
+    "id": 2,
+    "name": "Tensimeter Digital",
+    "description": "Alat pengukur tekanan darah otomatis.",
+    "details": {
+      "price": "250.000",
+      "image": "https://medicalogy.com/images/product/omron-tensimeter-digital-hem-7130.jpeg",
+      "category": "Pengukur"
+    },
+    "tags": ["Tekanan Darah", "Digital", "Rumah Tangga"]
+  },
+  {
+    "id": 3,
+    "name": "Oximeter",
+    "description": "Mengukur kadar oksigen dalam darah dan denyut nadi.",
+    "details": {
+      "price": "120.000",
+      "image": "https://www.static-src.com/wcsstore/Indraprastha/images/catalog/full//90/MTA-8214209/no_brand_pulse_oximeter_alat_ukur_kadar_oksigen_oxymeter_fingertrip_oximetry_sp02_saturation_dengan_monitor_full01_t2agu34.jpg",
+      "category": "Pengukur"
+    },
+    "tags": ["Oksigen", "Digital", "Nadi"]
+  },
+  {
+    "id": 4,
+    "name": "Nebulizer",
+    "description": "Alat bantu pernapasan untuk penderita asma.",
+    "details": {
+      "price": "350.000",
+      "image": "https://images.tokopedia.net/img/cache/700/VqbcmM/2023/2/7/98ca2ed8-ae68-4353-80ad-a05760c8c72c.png",
+      "category": "Perawatan"
+    },
+    "tags": ["Asma", "Pernapasan", "Elektronik"]
+  },
+  {
+    "id": 5,
+    "name": "Alat Cek Gula Darah",
+    "description": "Memantau kadar gula darah harian.",
+    "details": {
+      "price": "180.000",
+      "image": "https://www.sinocare.co.id/wp-content/uploads/2021/03/accu.png",
+      "category": "Pengukur"
+    },
+    "tags": ["Diabetes", "Monitoring", "Digital"]
+  },
+  {
+    "id": 6,
+    "name": "Kursi Roda Lipat",
+    "description": "Kursi roda praktis dan mudah dilipat.",
+    "details": {
+      "price": "1.200.000",
+      "image": "https://www.static-src.com/wcsstore/Indraprastha/images/catalog/full//103/MTA-2974783/sella_kursi-roda-lipat-velg-racing_full02.jpg",
+      "category": "Mobilitas"
+    },
+    "tags": ["Mobilitas", "Difabel", "Transport"]
+  },
+  {
+    "id": 7,
+    "name": "Tongkat Jalan Lipat",
+    "description": "Tongkat bantu jalan untuk lansia.",
+    "details": {
+      "price": "85.000",
+      "image": "https://images.tokopedia.net/img/cache/700/VqbcmM/2022/1/17/721cc9a0-bd0a-424e-858d-17e67a3ec197.png",
+      "category": "Mobilitas"
+    },
+    "tags": ["Lansia", "Bantuan Jalan", "Ringan"]
+  },
+  {
+    "id": 8,
+    "name": "Alat Pijat Elektrik",
+    "description": "Pijat relaksasi otot leher dan bahu.",
+    "details": {
+      "price": "299.000",
+      "image": "https://images.tokopedia.net/img/cache/700/VqbcmM/2023/8/25/ca4d39c4-c359-4cda-ab29-5cb0ef0774d8.jpg",
+      "category": "Relaksasi"
+    },
+    "tags": ["Pijat", "Elektrik", "Otot"]
+  },
+  {
+    "id": 9,
+    "name": "Matras Terapi Panas",
+    "description": "Matras pemanas untuk terapi punggung.",
+    "details": {
+      "price": "185.000",
+      "image": "https://images.tokopedia.net/img/cache/700/VqbcmM/2021/5/17/6ac6e1f3-6908-4959-bec7-5d3a64ff3107.jpg",
+      "category": "Relaksasi"
+    },
+    "tags": ["Terapi", "Pemanas", "Otot"]
+  },
+  {
+    "id": 10,
+    "name": "Alat Bantu Dengar",
+    "description": "Membantu pendengaran untuk lansia.",
+    "details": {
+      "price": "500.000",
+      "image": "https://s.alicdn.com/@sc04/kf/Hec2b00bd8974469ead5a7c5bcad56eb4H.jpg_720x720q50.jpg",
+      "category": "Pendengaran"
+    },
+    "tags": ["Hearing Aid", "Lansia", "Elektronik"]
+  },
+  {
+    "id": 11,
+    "name": "Face Shield",
+    "description": "Pelindung wajah dari cipratan dan droplet.",
+    "details": {
+      "price": "15.000",
+      "image": "https://lensza.co.id/cdn/shop/products/FaceShield_1200x1200.jpg?v=1597319848",
+      "category": "Pelindung"
+    },
+    "tags": ["PPE", "Pelindung", "Covid"]
+  },
+  {
+    "id": 12,
+    "name": "Masker Medis 3 Ply",
+    "description": "Masker pelindung sekali pakai.",
+    "details": {
+      "price": "30.000",
+      "image": "https://www.static-src.com/wcsstore/Indraprastha/images/catalog/full//102/MTA-6927663/mask_mask_disposable_3_ply_earloop_masker_medis_-50_pcs-_full06_gv7e0r6c.jpg",
+      "category": "Pelindung"
+    },
+    "tags": ["Masker", "Medis", "Disposable"]
+  },
+  {
+    "id": 13,
+    "name": "Sarung Tangan Latex",
+    "description": "Sarung tangan medis sekali pakai.",
+    "details": {
+      "price": "40.000",
+      "image": "https://goalkes-images.s3.ap-southeast-1.amazonaws.com/products/i2DIMYKgosFzi7UXmuoQZaABP5NIPHeFeVyVHTPs.jpg",
+      "category": "Pelindung"
+    },
+    "tags": ["Latex", "Medis", "PPE"]
+  },
+  {
+    "id": 14,
+    "name": "Stetoskop",
+    "description": "Alat pemeriksa detak jantung.",
+    "details": {
+      "price": "90.000",
+      "image": "https://images-cdn.ubuy.co.id/635247f5a63a3612d9316bd2-u-s-army-stethoscope-oem-classic.jpg",
+      "category": "Pemeriksa"
+    },
+    "tags": ["Dokter", "Pemeriksaan", "Medis"]
+  },
+  {
+    "id": 15,
+    "name": "Senter Medis LED",
+    "description": "Senter kecil untuk pemeriksaan mulut dan mata.",
+    "details": {
+      "price": "20.000",
+      "image": "https://image.made-in-china.com/2f0j00epcqfngCrVoy/Mini-LED-Handheld-Pen-Light-Pocket-Torch-Portable-Doctor-Medical-Flashlight-with-High-Lumens.jpg",
+      "category": "Pemeriksa"
+    },
+    "tags": ["LED", "Pemeriksaan", "Dokter"]
+  },
+  {
+    "id": 16,
+    "name": "Cooler Box Vaksin",
+    "description": "Kotak pendingin untuk transportasi vaksin.",
+    "details": {
+      "price": "750.000",
+      "image": "https://www.galerimedika.com/image/cache/catalog/02-Produk/17-Peralatan-Rumah-Sakit/onemed-cooler-box-8liter-2-1080x1080.jpg",
+      "category": "Penyimpanan"
+    },
+    "tags": ["Vaksin", "Penyimpanan", "Kesehatan"]
+  },
+  {
+    "id": 17,
+    "name": "Alat Cek Kehamilan",
+    "description": "Tes cepat untuk kehamilan.",
+    "details": {
+      "price": "10.000",
+      "image": "https://d2qjkwm11akmwu.cloudfront.net/products/10154-1665780501.webp",
+      "category": "Tes Cepat"
+    },
+    "tags": ["Kehamilan", "Test Pack", "Praktis"]
+  },
+  {
+    "id": 18,
+    "name": "Infus Set",
+    "description": "Peralatan untuk terapi infus.",
+    "details": {
+      "price": "25.000",
+      "image": "https://www.static-src.com/wcsstore/Indraprastha/images/catalog/full//92/MTA-3172439/onemed_onemed-y-type-infus-set-dewasa_full02.jpg",
+      "category": "Perawatan"
+    },
+    "tags": ["Infus", "Medis", "Steril"]
+  },
+  {
+    "id": 19,
+    "name": "Alkohol Swab",
+    "description": "Tisu alkohol untuk disinfeksi.",
+    "details": {
+      "price": "2.000",
+      "image": "https://d2qjkwm11akmwu.cloudfront.net/products/400423_19-8-2022_16-11-49-1665860242.webp",
+      "category": "Disinfektan"
+    },
+    "tags": ["Steril", "Tisu", "Pembersih"]
+  },
+  {
+    "id": 20,
+    "name": "Termometer Infrared",
+    "description": "Mengukur suhu tanpa kontak.",
+    "details": {
+      "price": "275.000",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_GDayrU-cmXq1LqGhO25Th--QCArqDCM1-w&s",
+      "category": "Pengukur"
+    },
+    "tags": ["Infrared", "Digital", "Tanpa Kontak"]
+  }
+]

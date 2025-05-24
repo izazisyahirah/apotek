@@ -1,0 +1,182 @@
+Styling untuk keseluruhan halaman
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Container utama */
+.card {
+    max-width: 650px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card2 {
+    max-width: 650px;
+    margin: 20px auto;
+    background: #0c0074;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card3 {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 10px;
+    text-align: center;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+
+}
+
+/* Header utama */
+h1 {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #ffffff;
+    text-align: center;
+}
+
+h2 {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #0c0074;
+    text-align: center;
+}
+
+/* Paragraf */
+p {
+    text-align: justify; /*rata kiri kanan*/
+    font-size: 16px;
+    line-height: 1.5; /*jarak baris*/
+    margin-bottom: 15px;
+    text-indent: 50px; /*text awal masuk lebih*/
+}
+
+.text {
+    text-align: justify; /*rata kiri kanan*/
+    font-size: 16px;
+    line-height: 1.5; /*jarak baris*/
+    margin-bottom: 15px;
+}
+
+.text2 {
+    text-align: center; /*rata kiri kanan*/
+    font-size: 16px;
+    line-height: 1.5; /*jarak baris*/
+    margin-bottom: 15px;
+}
+
+/* Garis pemisah */
+hr {
+    border: none;
+    height: 2px;
+    background: #ddd;
+    margin: 10px 0;
+}
+
+small {
+    display: block;
+    font-style: italic;
+    text-align: center;
+    color: #888;
+    margin-top: 5px;
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding: 10px 0;
+    border-top: 1px solid #ddd;
+}
+
+.nav-buttons .prev,
+.nav-buttons .next {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.nav-buttons .prev {
+    background: #3498db;
+    color: white;
+}
+
+.nav-buttons .prev:hover {
+    background: #2980b9;
+}
+
+.nav-buttons .next {
+    background: #2ecc71;
+    color: white;
+}
+
+.nav-buttons .next:hover {
+    background: #27ae60;
+}
+
+/* QnA */   
+  .feedback-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .btn-yes, .btn-no {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .btn-yes {
+    background: #4caf50;
+    color: white;
+  }
+  
+  .btn-no {
+    background: #f44336;
+    color: white;
+  }
+  
+  .btn-yes:hover {
+    background: #45a049;
+  }
+  
+  .btn-no:hover {
+    background: #d32f2f;
+  } 
+
+
+/* Product */
+.product-item {
+    list-style: none;
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+
+    max-width: 25%;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 20px;
+  }
