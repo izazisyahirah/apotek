@@ -9,7 +9,9 @@ const Error403 = React.lazy(() => import("./pages/Error/Error403"));
 const Error404 = React.lazy(() => import("./pages/Error/Error404"));
 const About = React.lazy(() => import("./pages/About"));
 const Medicine = React.lazy(() => import("./pages/Medicine"));
+const MedicineDetail = React.lazy(() => import("./pages/MedicineDetail"))
 const MedicalProduct = React.lazy(() => import("./pages/MedicalProduct"));
+const MedicalDetail = React.lazy(() => import("./pages/MedicalDetail"))
 
 import Loading from"./components/Loading";
 const HeroSection = React.lazy(() => import("./components/HeroSection"));
@@ -49,7 +51,9 @@ function App() {
               }
             />
             <Route path="/medicine" element={<Medicine />} />
+            <Route path="/medicine/:id" element={<MedicineDetail />} /> 
             <Route path="/medical-product" element={<MedicalProduct />} />
+            <Route path="/medical-product/:id" element={<MedicalDetail />} /> 
             <Route path="/about" element={<About />} />
 
             <Route path="/400" element={<Error400 />} />

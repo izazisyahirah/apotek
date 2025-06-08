@@ -2,6 +2,7 @@ import { FaCartPlus } from "react-icons/fa";
 import { BsFillExclamationDiamondFill } from "react-icons/bs"; // untuk errorInfo
 import { useEffect, useState } from "react";
 import medicineData from "../data/medicine.json";
+import { Link } from "react-router-dom";
 
 export default function Medicine() {
   const [medicine, setMedicine] = useState([]);
@@ -55,7 +56,7 @@ export default function Medicine() {
 }
 
 function ProductCard({ product }) {
-  const { name, details } = product;
+  const { id, name, details } = product;
 
   return (
     <div className="p-5">
@@ -66,7 +67,14 @@ function ProductCard({ product }) {
           className="w-full h-40 object-contain p-4"
         />
         <div className="px-4 pb-4">
-          <h3 className="text-sm font-nunito-bold mb-1">{name}</h3>
+          <h3 className="text-sm font-nunito-bold mb-1">
+            <Link
+              to={`/medicine/${id}`}
+              className="text-green-500 hover:text-green-700"
+            >
+              {name}
+            </Link>
+          </h3>
           <p className="text-sm font-nunito-bold text-gray-500 mb-2">
             Rp{details.price}
           </p>
