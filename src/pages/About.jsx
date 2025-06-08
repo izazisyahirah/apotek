@@ -1,6 +1,7 @@
 import { FiPackage, FiUsers } from "react-icons/fi";
 import { MdHealthAndSafety, MdOutlineSupportAgent } from "react-icons/md";
 import { BsCapsule, BsClockHistory } from "react-icons/bs";
+import Quotes from "../pages/Quotes"
 
 export default function About() {
   return (
@@ -104,6 +105,8 @@ export default function About() {
           ))}
         </div>
       </div>
+      {/* Quotes */}
+      <Quotes/>
     </div>
   );
 }
