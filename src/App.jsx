@@ -17,6 +17,8 @@ import Loading from"./components/Loading";
 const HeroSection = React.lazy(() => import("./components/HeroSection"));
 const Services = React.lazy(() => import("./components/Services"));
 import Products, { MedicalProducts, TopProducts, UpcomingProducts } from "./components/Products";
+import Review from "./pages/Review";
+import Profile from "./pages/Profile";
 const PromoCard = React.lazy(() => import("./components/PromoCard"));
 const Stats = React.lazy(() => import("./components/Stats"));
 const Banner = React.lazy(() => import("./components/Banner"));
@@ -53,8 +55,10 @@ function App() {
             <Route path="/medicine" element={<Medicine />} />
             <Route path="/medicine/:id" element={<MedicineDetail />} /> 
             <Route path="/medical-product" element={<MedicalProduct />} />
-            <Route path="/medical-product/:id" element={<MedicalDetail />} /> 
+            <Route path="/medical-product/:id" element={<MedicalDetail />} />
+            <Route path="/review" element={<Review />} /> 
             <Route path="/about" element={<About />} />
+            <Route path="/profile" element={<Profile />} />
 
             <Route path="/400" element={<Error400 />} />
             <Route path="/401" element={<Error401 />} />

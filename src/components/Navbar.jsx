@@ -1,3 +1,4 @@
+import { MdRateReview } from "react-icons/md"; 
 import { AiFillHome } from "react-icons/ai";
 import {
   FaSearch,
@@ -75,14 +76,14 @@ export default function Navbar() {
             <FaInfoCircle className="cursor-pointer" />
           </NavLink>
           <FaShoppingBag className="cursor-pointer" />
-          <div className="flex items-center space-x-2 cursor-pointer">
+          <NavLink id="profile" to="/profile" className="flex items-center space-x-2 cursor-pointer">
             <img
               src="https://i.pinimg.com/474x/b2/08/eb/b208eb2516ff294adef797df39010e94.jpg"
               alt="User"
               className="w-8 h-8 rounded-full object-cover"
             />
             <FaChevronDown className="text-sm" />
-          </div>
+          </NavLink>
         </div>
       </div>
 
@@ -103,6 +104,10 @@ export default function Navbar() {
         >
           <FaBriefcaseMedical className="text-lg" />
           <span>Medical Product</span>
+        </NavLink>
+        <NavLink id="review" to="/review" className={menuClass}>
+          <MdRateReview className="text-lg" />
+          <span>Review</span>
         </NavLink>
       </nav>
     </header>
