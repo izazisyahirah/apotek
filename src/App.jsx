@@ -16,7 +16,7 @@ const MedicalDetail = React.lazy(() => import("./pages/MedicalDetail"))
 import Loading from"./components/Loading";
 const HeroSection = React.lazy(() => import("./components/HeroSection"));
 const Services = React.lazy(() => import("./components/Services"));
-import Products, { MedicalProducts, TopProducts, UpcomingProducts } from "./components/Products";
+import Products, { TopProducts } from "./components/Products";
 import Review from "./pages/Review";
 import Profile from "./pages/Profile";
 const PromoCard = React.lazy(() => import("./components/PromoCard"));
@@ -45,8 +45,6 @@ function App() {
                   <PromoCard />
                   <TopProducts />
                   <Stats />
-                  <MedicalProducts />
-                  <UpcomingProducts />
                   <Banner />
                   <Blog />
                 </>

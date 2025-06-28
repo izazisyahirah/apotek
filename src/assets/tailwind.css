@@ -46,3 +46,7 @@
     --color-softpurple: #F8ECFE;
     --color-darkgray: #333333;
 }
+
+@plugin "daisyui" {
+    themes: light --default, dark --prefersdark, cupcake;
+}

@@ -4,7 +4,7 @@
     "name": "Paracetamol",
     "description": "Obat penurun demam dan pereda nyeri.",
     "details": {
-      "price": "5.000",
+      "price": 5000,
       "image": "https://www.tanyaobat.com/files/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBdllFIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--a91721bc16be583c2334982d1c52dcfb9e079421/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkJ6QnBBdlFCT2d4eGRXRnNhWFI1YVZBPSIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--12f876ec81559520874112cdcdc26df124828ea3/paracetamol%20kf.webp",
       "category": "Tablet"
     },
@@ -15,7 +15,7 @@
     "name": "Amoxicillin",
     "description": "Antibiotik untuk infeksi bakteri.",
     "details": {
-      "price": "12.000",
+      "price": 12000,
       "image": "https://www.sidomuncul.co.id/assets/images/product/Berlico/Prescription-Ethical/Amoxicillin-Trihydrate-125.png",
       "category": "Sirup"
     },
@@ -26,7 +26,7 @@
     "name": "Ibuprofen",
     "description": "Pereda nyeri, radang, dan demam.",
     "details": {
-      "price": "9.000",
+      "price": 9000,
       "image": "https://www.novapharin.co.id/data/plist_pic/96.jpg",
       "category": "Tablet"
     },
@@ -37,7 +37,7 @@
     "name": "Cetirizine",
     "description": "Antihistamin untuk alergi.",
     "details": {
-      "price": "7.000",
+      "price": 7000,
       "image": "https://www.triman.co.id/images/cetirizine-crop-u5559_2x.jpg?crc=530001373",
       "category": "Tablet"
     },
@@ -48,7 +48,7 @@
     "name": "Omeprazole",
     "description": "Mengurangi asam lambung.",
     "details": {
-      "price": "8.500",
+      "price": 8500,
       "image": "https://storage.googleapis.com/rxstorage/Product/Photos/farmaku_omeprazole-20-mg-capsule-novell-01.jpg",
       "category": "Tablet"
     },
@@ -59,7 +59,7 @@
     "name": "Simvastatin",
     "description": "Menurunkan kolesterol.",
     "details": {
-      "price": "9.500",
+      "price": 9500,
       "image": "https://res-3.cloudinary.com/dk0z4ums3/image/upload/c_scale,h_500,w_500/v1/production/pharmacy/products/1698724194_simva_20_berno-removebg-preview",
       "category": "Tablet"
     },
@@ -70,7 +70,7 @@
     "name": "Salbutamol",
     "description": "Obat asma dan sesak napas.",
     "details": {
-      "price": "10.000",
+      "price": 10000,
       "image": "https://d2qjkwm11akmwu.cloudfront.net/products/40991_31-3-2019_13-54-44-1665760672.webp",
       "category": "Sirup"
     },
@@ -81,7 +81,7 @@
     "name": "Metformin",
     "description": "Obat diabetes tipe 2.",
     "details": {
-      "price": "8.000",
+      "price": 8000,
       "image": "https://s3-publishing-cmn-svc-prd.s3.ap-southeast-1.amazonaws.com/drugs/5_4p6ozT7iKjohaFdvG0F/original/4tstysy6jnklkp6lqtjbhmc4bs855mh2.png",
       "category": "Tablet"
     },
@@ -92,7 +92,7 @@
     "name": "Loperamide",
     "description": "Mengatasi diare akut.",
     "details": {
-      "price": "6.000",
+      "price": 6000,
       "image": "https://res-5.cloudinary.com/dk0z4ums3/image/upload/c_scale,h_500,w_500/v1/production/pharmacy/products/1694353738_loperamid_nova",
       "category": "Tablet"
     },
@@ -103,7 +103,7 @@
     "name": "Sanadryl",
     "description": "Penekan batuk.",
     "details": {
-      "price": "5.500",
+      "price": 5500,
       "image": "https://d2qjkwm11akmwu.cloudfront.net/products/1872-1665761112.webp",
       "category": "Sirup"
     },
@@ -114,7 +114,7 @@
     "name": "Chlorpheniramine",
     "description": "Obat alergi dan flu.",
     "details": {
-      "price": "5.000",
+      "price": 5000,
       "image": "https://res-3.cloudinary.com/dk0z4ums3/image/upload/c_scale,h_500,w_500/v1/production/pharmacy/products/1708663049_ctm_triman-removebg-preview",
       "category": "Tablet"
     },
@@ -125,7 +125,7 @@
     "name": "Ranitidine",
     "description": "Mengurangi produksi asam lambung.",
     "details": {
-      "price": "7.500",
+      "price": 7500,
       "image": "https://res-4.cloudinary.com/dk0z4ums3/image/upload/c_scale,h_500,w_500/v1/production/pharmacy/products/1694356432_ranitidine_erela",
       "category": "Tablet"
     },
@@ -136,7 +136,7 @@
     "name": "Amlodipine",
     "description": "Menurunkan tekanan darah.",
     "details": {
-      "price": "11.000",
+      "price": 11000,
       "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScPXcL1Kf9wNmnJY_lPznpwdv1EkYEdAYZjA&s",
       "category": "Tablet"
     },
@@ -147,7 +147,7 @@
     "name": "Losartan",
     "description": "Obat hipertensi dan gagal jantung.",
     "details": {
-      "price": "12.000",
+      "price": 12000,
       "image": "https://storage.googleapis.com/rxstorage/Product/large/Apotek_Online_Farmaku_com_Acetensa_Tab_30S1.jpg",
       "category": "Tablet"
     },
@@ -158,7 +158,7 @@
     "name": "Mefenamic Acid",
     "description": "Pereda nyeri haid dan otot.",
     "details": {
-      "price": "9.500",
+      "price": 9500,
       "image": "https://www.novapharin.co.id/data/plist_pic/87.jpg",
       "category": "Tablet"
     },
@@ -169,7 +169,7 @@
     "name": "Albendazole",
     "description": "Obat cacingan spektrum luas.",
     "details": {
-      "price": "8.000",
+      "price": 8000,
       "image": "https://d2qjkwm11akmwu.cloudfront.net/products/20679-1665793589.jpeg",
       "category": "Tablet"
     },
@@ -180,7 +180,7 @@
     "name": "Vitamin C",
     "description": "Suplemen untuk daya tahan tubuh.",
     "details": {
-      "price": "8.000",
+      "price": 8000,
       "image": "https://d2qjkwm11akmwu.cloudfront.net/products/37303_15-6-2022_17-35-11-1665774411.webp",
       "category": "Tablet"
     },
@@ -191,7 +191,7 @@
     "name": "Zinc Sulfate",
     "description": "Membantu penyembuhan luka dan imun.",
     "details": {
-      "price": "7.000",
+      "price": 7000,
       "image": "https://triman.co.id/images/ZINC-SULFATE.jpg",
       "category": "Tablet"
     },
@@ -202,7 +202,7 @@
     "name": "Diazepam",
     "description": "Mengatasi kecemasan dan spasme otot.",
     "details": {
-      "price": "13.000",
+      "price": 13000,
       "image": "https://www.lifecareneuro.com/wp-content/uploads/2023/07/DIZE-10.jpg",
       "category": "Tablet"
     },
@@ -213,7 +213,7 @@
     "name": "Furosemide",
     "description": "Diuretik untuk pembengkakan dan hipertensi.",
     "details": {
-      "price": "10.000",
+      "price": 10000,
       "image": "https://res-3.cloudinary.com/dk0z4ums3/image/upload/c_scale,h_500,w_500/v1/production/pharmacy/products/1701364241_furosemide_40_mg_10_tablet_fm-removebg-preview",
       "category": "Tablet"
     },
