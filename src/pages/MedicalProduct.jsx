@@ -1,4 +1,8 @@
-import { FaCartPlus, FaMinusCircle, FaPlusCircle } from "react-icons/fa";
+import {
+  FaCartPlus,
+  FaHeart,
+  FaRegHeart,
+} from "react-icons/fa";
 import { BsFillExclamationDiamondFill } from "react-icons/bs";
 import { useEffect, useState } from "react";
 import medicalData from "../data/medical.json";
@@ -8,7 +12,19 @@ export default function MedicalProduct() {
   const [medical, setMedical] = useState([]);
   const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(() => {
+    const stored = localStorage.getItem("cart");
+    return stored ? JSON.parse(stored) : [];
+  });
+  const [likedProducts, setLikedProducts] = useState(() => {
+    const stored = localStorage.getItem("likes");
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedQty, setSelectedQty] = useState(1);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,185 +38,155 @@ export default function MedicalProduct() {
       } catch (err) {
         setError("Gagal memuat data produk");
       }
-    }, 500);
+    }, 300);
 
     return () => clearTimeout(timeout);
   }, [query]);
 
-  const getQuantity = (productId) => {
-    const item = cart.find((c) => c.product.id === productId);
-    return item ? item.quantity : 0;
-  };
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
 
-  const handleAddToCart = (product) => {
+  useEffect(() => {
+    localStorage.setItem("likes", JSON.stringify(likedProducts));
+  }, [likedProducts]);
+
+  const handleAddToCart = (product, qty = 1) => {
     setCart((prevCart) => {
       const existing = prevCart.find((item) => item.product.id === product.id);
       if (existing) {
         return prevCart.map((item) =>
           item.product.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: item.quantity + qty }
             : item
         );
       }
-      return [...prevCart, { product, quantity: 1 }];
+      return [...prevCart, { product, quantity: qty }];
     });
   };
 
-  const handleDecrease = (productId) => {
-    setCart((prevCart) =>
-      prevCart
-        .map((item) =>
-          item.product.id === productId
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        )
-        .filter((item) => item.quantity > 0)
-    );
+  const handleLikeToggle = (fullId) => {
+    const updated = likedProducts.includes(fullId)
+      ? likedProducts.filter((id) => id !== fullId)
+      : [...likedProducts, fullId];
+    setLikedProducts(updated);
   };
 
-  const handleIncrease = (productId) => {
-    setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.product.id === productId
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      )
-    );
+  const openModal = (product) => {
+    setSelectedProduct(product);
+    setSelectedQty(1);
+    setShowModal(true);
   };
 
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cart.reduce(
-    (sum, item) => sum + item.quantity * item.product.details.price,
-    0
-  );
-
-  const errorInfo = error ? (
-    <div className="bg-red-200 mb-5 p-5 text-sm font-light text-gray-600 rounded flex items-center">
-      <BsFillExclamationDiamondFill className="text-red-600 me-2 text-lg" />
-      {error}
-    </div>
-  ) : null;
+  const closeModal = () => {
+    setSelectedProduct(null);
+    setShowModal(false);
+  };
 
   return (
-    <div className="p-4">
-      {errorInfo}
+    <section className="min-h-screen bg-gray-50 py-10 px-4">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Cari alat kesehatan..."
+            className="p-3 w-full md:max bg-white border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+        </div>
 
-      <input
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Cari produk..."
-        className="mb-4 p-3 w-full bg-white rounded-2xl shadow-lg"
-      />
-
-      {cart.length > 0 && (
-        <div className="mb-6 p-4 bg-white rounded-xl shadow border border-green-100 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="text-sm text-gray-700 space-y-2">
-            <p className="text-base font-semibold text-green-700">
-              🛒 {totalItems} item di keranjang:
-            </p>
-            <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
-              {cart.map((item) => (
-                <li key={item.product.id}>
-                  {item.product.name} — {item.quantity}x{" "}
-                  <span className="text-green-700">
-                    Rp{item.product.details.price.toLocaleString("id-ID")}
-                  </span>
-                </li>
-              ))}
-            </ul>
+        {error && (
+          <div className="bg-red-100 p-4 rounded-lg text-red-700 flex items-center gap-2 mb-4 shadow">
+            <BsFillExclamationDiamondFill /> {error}
           </div>
+        )}
 
-          <div className="flex flex-col justify-between h-full">
-            <div className="text-sm text-gray-700">
-              <p className="mb-2 text-base font-semibold text-green-700">💰 Total Belanja:</p>
-              <p className="text-2xl font-bold text-green-800">
-                {"Rp" + totalPrice.toLocaleString("id-ID")}
-              </p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+          {medical.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              isLiked={likedProducts.includes(`medical-${product.id}`)}
+              onAddToCart={() => openModal(product)}
+              onLikeToggle={handleLikeToggle}
+            />
+          ))}
+        </div>
+      </div>
+
+      {showModal && selectedProduct && (
+        <div className="fixed inset-0 z-40 bg-black/50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-xl w-80 shadow-lg relative">
+            <h2 className="text-lg font-semibold text-green-700 mb-3">
+              Tambah ke Keranjang
+            </h2>
+            <p className="mb-2 text-sm text-gray-600">{selectedProduct.name}</p>
+
+            <label className="block text-sm mb-1 text-gray-700">Jumlah:</label>
+            <input
+              type="number"
+              min={1}
+              value={selectedQty}
+              onChange={(e) => setSelectedQty(parseInt(e.target.value))}
+              className="w-full border border-gray-300 rounded-lg p-2 mb-4"
+            />
+
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={closeModal}
+                className="px-4 py-2 rounded bg-gray-300 text-gray-700 hover:bg-gray-400"
+              >
+                Batal
+              </button>
+              <button
+                onClick={() => {
+                  handleAddToCart(selectedProduct, selectedQty);
+                  closeModal();
+                }}
+                className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
+              >
+                Tambah
+              </button>
             </div>
-            <button
-              onClick={() => navigate("/checkout")}
-              className="mt-6 w-full bg-green-600 hover:bg-green-700 transition text-white text-sm px-5 py-3 rounded-lg shadow font-semibold"
-            >
-              Lanjut ke Pembayaran
-            </button>
           </div>
         </div>
       )}
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-        {medical.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            quantity={getQuantity(product.id)}
-            onAddToCart={handleAddToCart}
-            onIncrease={handleIncrease}
-            onDecrease={handleDecrease}
-          />
-        ))}
-      </div>
-    </div>
+    </section>
   );
 }
 
-function ProductCard({
-  product,
-  quantity,
-  onAddToCart,
-  onIncrease,
-  onDecrease,
-}) {
+function ProductCard({ product, isLiked, onAddToCart, onLikeToggle }) {
   const { id, name, details } = product;
 
   return (
-    <div className="p-5">
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
-        <img
-          src={details.image}
-          alt={name}
-          className="w-full h-40 object-contain p-4"
-        />
-        <div className="px-4 pb-4">
-          <h3 className="text-sm font-nunito-bold mb-1">
-            <Link
-              to={`/medical-product/${id}`}
-              className="text-green-500 hover:text-green-700"
-            >
-              {name}
-            </Link>
-          </h3>
-          <p className="text-sm font-nunito-bold text-gray-500 mb-2">
-            Rp{details.price.toLocaleString("id-ID")}
-          </p>
-          {quantity > 0 ? (
-            <div className="flex justify-center items-center gap-4 mt-2">
-              <button
-                onClick={() => onDecrease(id)}
-                className="text-yellow-600 hover:text-yellow-800 transition"
-              >
-                <FaMinusCircle size={20} />
-              </button>
-              <span className="text-sm font-semibold text-gray-700">
-                {quantity}
-              </span>
-              <button
-                onClick={() => onIncrease(id)}
-                className="text-green-600 hover:text-green-800 transition"
-              >
-                <FaPlusCircle size={20} />
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => onAddToCart(product)}
-              className="w-full bg-green-600 hover:bg-green-700 transition text-white font-semibold text-sm py-2 rounded-md flex items-center justify-center gap-2 mt-2"
-            >
-              <FaCartPlus /> Add to Cart
-            </button>
-          )}
-        </div>
-      </div>
+    <div className="bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition relative flex flex-col items-center text-center">
+      <button
+        onClick={() => onLikeToggle(`medical-${id}`)}
+        className="absolute top-3 right-3 text-red-500 hover:scale-110 transition"
+        title={isLiked ? "Hapus dari Favorit" : "Tambah ke Favorit"}
+      >
+        {isLiked ? <FaHeart /> : <FaRegHeart />}
+      </button>
+
+      <img
+        src={details.image}
+        alt={name}
+        className="w-full h-36 object-contain mb-3 rounded"
+      />
+      <Link to={`/medical-product/${id}`}>
+        <u><h3 className="text-green-700 font-semibold text-sm mb-1">{name}</h3></u>
+      </Link>
+      <p className="text-gray-500 text-sm mb-3">
+        Rp{details.price.toLocaleString("id-ID")}
+      </p>
+
+      <button
+        onClick={onAddToCart}
+        className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-medium transition"
+      >
+        <FaCartPlus /> Tambah ke Keranjang
+      </button>
     </div>
   );
 }

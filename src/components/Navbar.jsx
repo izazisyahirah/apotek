@@ -1,15 +1,15 @@
-import { useState } from "react";
+import { BsSuitHeartFill } from "react-icons/bs";
+import { BsFillInfoCircleFill } from "react-icons/bs";
+import { BsHandbagFill } from "react-icons/bs";
+import { FaNotesMedical } from "react-icons/fa";
+import { useEffect, useState } from "react";
 import { MdRateReview } from "react-icons/md";
 import { AiFillHome } from "react-icons/ai";
 import {
   FaSearch,
-  FaHeart,
-  FaShoppingBag,
   FaChevronDown,
   FaPills,
   FaBriefcaseMedical,
-  FaInfoCircle,
-  FaNotesMedical,
 } from "react-icons/fa";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 
@@ -39,6 +39,22 @@ export default function Navbar() {
     `flex items-center gap-2 text-sm rounded-lg transition-colors cursor-pointer ${
       isActive ? "text-green font-semibold" : "text-darkgray hover:text-green"
     }`;
+
+  //badge cart
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    const updateCartCount = () => {
+      const stored = JSON.parse(localStorage.getItem("cart")) || [];
+      const totalItems = stored.reduce((sum, item) => sum + item.quantity, 0);
+      setCartCount(totalItems);
+    };
+
+    updateCartCount();
+
+    const interval = setInterval(updateCartCount, 1000); // realtime update
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <header id="header-container" className="bg-white shadow-sm relative">
@@ -75,11 +91,22 @@ export default function Navbar() {
 
         {/* Icons */}
         <div className="flex items-center space-x-6 text-darkgray text-xl relative">
-          <FaHeart className="cursor-pointer" />
-          <NavLink to="/about" className={iconClass}>
-            <FaInfoCircle className="cursor-pointer" />
+          <NavLink to="/likes" className={iconClass}>
+            <BsSuitHeartFill />
           </NavLink>
-          <FaShoppingBag className="cursor-pointer" />
+
+          <NavLink to="/about" className={iconClass}>
+            <BsFillInfoCircleFill className="cursor-pointer" />
+          </NavLink>
+
+          <NavLink to="/cart" className={({ isActive }) => `relative text-xl ${iconClass({ isActive })}`}>
+            <BsHandbagFill className="cursor-pointer" />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </NavLink>
 
           {/* Profile Dropdown */}
           <div className="relative">
