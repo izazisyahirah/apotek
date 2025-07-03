@@ -19,6 +19,7 @@ const Services = React.lazy(() => import("./components/Services"));
 import Products, { TopProducts } from "./components/Products";
 import Review from "./pages/Review";
 import Profile from "./pages/Profile";
+import ObatResep from "./pages/ObatResep";
 const PromoCard = React.lazy(() => import("./components/PromoCard"));
 const Stats = React.lazy(() => import("./components/Stats"));
 const Banner = React.lazy(() => import("./components/Banner"));
@@ -54,6 +55,7 @@ function App() {
             <Route path="/medicine/:id" element={<MedicineDetail />} /> 
             <Route path="/medical-product" element={<MedicalProduct />} />
             <Route path="/medical-product/:id" element={<MedicalDetail />} />
+            <Route path="/obat-resep" element={<ObatResep />} />
             <Route path="/review" element={<Review />} /> 
             <Route path="/about" element={<About />} />
             <Route path="/profile" element={<Profile />} />

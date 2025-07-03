@@ -9,6 +9,7 @@ import {
   FaPills,
   FaBriefcaseMedical,
   FaInfoCircle,
+  FaNotesMedical,
 } from "react-icons/fa";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 
@@ -147,6 +148,10 @@ export default function Navbar() {
         <NavLink to="/medical-product" className={menuClass}>
           <FaBriefcaseMedical className="text-lg" />
           <span>Medical Product</span>
+        </NavLink>
+        <NavLink to="/obat-resep" className={menuClass}>
+          <FaNotesMedical className="text-lg" />
+          <span>Obat Resep</span>
         </NavLink>
         <NavLink to="/review" className={menuClass}>
           <MdRateReview className="text-lg" />
