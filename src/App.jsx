@@ -22,6 +22,8 @@ import Profile from "./pages/Profile";
 import ObatResep from "./pages/ObatResep";
 import LikedProducts from "./pages/LikedProducts";
 import Cart from "./pages/Cart";
+import Article from "./pages/Article";
+import FAQ from "./pages/FAQ";
 const PromoCard = React.lazy(() => import("./components/PromoCard"));
 const Stats = React.lazy(() => import("./components/Stats"));
 const Banner = React.lazy(() => import("./components/Banner"));
@@ -58,6 +60,8 @@ function App() {
             <Route path="/medical-product" element={<MedicalProduct />} />
             <Route path="/medical-product/:id" element={<MedicalDetail />} />
             <Route path="/obat-resep" element={<ObatResep />} />
+            <Route path="/artikel" element={<Article />} />
+            <Route path="/FAQ" element={<FAQ />} />
             <Route path="/review" element={<Review />} /> 
 
             <Route path="/likes" element={<LikedProducts />} />

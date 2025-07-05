@@ -1,4 +1,4 @@
-import { BsSuitHeartFill } from "react-icons/bs";
+import { BsPatchQuestionFill, BsSuitHeartFill } from "react-icons/bs";
 import { BsFillInfoCircleFill } from "react-icons/bs";
 import { BsHandbagFill } from "react-icons/bs";
 import { FaNotesMedical } from "react-icons/fa";
@@ -12,6 +12,7 @@ import {
   FaBriefcaseMedical,
 } from "react-icons/fa";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { RiArticleFill } from "react-icons/ri";
 
 export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -179,6 +180,14 @@ export default function Navbar() {
         <NavLink to="/obat-resep" className={menuClass}>
           <FaNotesMedical className="text-lg" />
           <span>Obat Resep</span>
+        </NavLink>
+        <NavLink to="/artikel" className={menuClass}>
+          <RiArticleFill className="text-lg" />
+          <span>Artikel</span>
+        </NavLink>
+        <NavLink to="/FAQ" className={menuClass}>
+          <BsPatchQuestionFill className="text-lg" />
+          <span>FAQ</span>
         </NavLink>
         <NavLink to="/review" className={menuClass}>
           <MdRateReview className="text-lg" />
