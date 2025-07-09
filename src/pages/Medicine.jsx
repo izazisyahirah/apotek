@@ -66,7 +66,7 @@ export default function Medicine() {
       <div className="max-w-7xl mx-auto px-4">
         {/* Search & Filter */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-          <div className="w-full max-w-6xl bg-white shadow-lg rounded-2xl border border-green-600 overflow-hidden flex flex-col md:flex-row items-stretch">
+          <div className="w-full max-w-7xl bg-white shadow-lg rounded-2xl border border-green-600 overflow-hidden flex flex-col md:flex-row items-stretch">
             {/* Dropdown kategori */}
             <div className="relative w-full md:w-auto">
               <select
