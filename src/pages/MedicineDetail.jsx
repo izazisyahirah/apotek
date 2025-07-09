@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { medicine } from "../services/medicine";
+import { supabase } from "../services/supabase";
 import {
   FaArrowLeft,
   FaCartPlus,
@@ -14,63 +15,69 @@ export default function MedicineDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const [userEmail, setUserEmail] = useState("");
   const [product, setProduct] = useState(null);
   const [rekomendasi, setRekomendasi] = useState([]);
-  const [error, setError] = useState(null);
-  const [showDeskripsi, setShowDeskripsi] = useState(false);
   const [quantity, setQuantity] = useState(0);
+  const [cart, setCart] = useState([]);
+  const [likedProducts, setLikedProducts] = useState([]);
+  const [showDeskripsi, setShowDeskripsi] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [loadingNavigate, setLoadingNavigate] = useState(false);
+  const [error, setError] = useState("");
 
-  const [cart, setCart] = useState(() => {
-    const stored = localStorage.getItem("cart");
-    return stored ? JSON.parse(stored) : [];
-  });
+  // Ambil email user login
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) setUserEmail(user.email);
+    });
+  }, []);
 
-  const [likedProducts, setLikedProducts] = useState(() => {
-    const stored = localStorage.getItem("likes");
-    return stored ? JSON.parse(stored) : [];
-  });
+  // Ambil cart & likes dari localStorage berdasarkan email
+  useEffect(() => {
+    if (userEmail) {
+      const storedCart = JSON.parse(localStorage.getItem(`cart_${userEmail}`)) || [];
+      const storedLikes = JSON.parse(localStorage.getItem(`likes_${userEmail}`)) || [];
+      setCart(storedCart);
+      setLikedProducts(storedLikes);
+    }
+  }, [userEmail]);
 
+  // Simpan perubahan ke localStorage
+  useEffect(() => {
+    if (userEmail) {
+      localStorage.setItem(`cart_${userEmail}`, JSON.stringify(cart));
+      localStorage.setItem(`likes_${userEmail}`, JSON.stringify(likedProducts));
+    }
+  }, [cart, likedProducts, userEmail]);
+
+  // Ambil detail produk & rekomendasi
   useEffect(() => {
     const fetchDetail = async () => {
       try {
         const data = await medicine.fetchMedicine();
         const found = data.find((item) => String(item.id) === id);
-
-        if (!found) {
-          setError("Produk tidak ditemukan");
-        } else {
+        if (found) {
           setProduct(found);
           const sameCategory = data.filter(
             (item) => item.kategori === found.kategori && item.id !== found.id
           );
           setRekomendasi(sameCategory.slice(0, 4));
+        } else {
+          setError("Produk tidak ditemukan.");
         }
       } catch (err) {
-        setError("Gagal mengambil data produk");
+        setError("Gagal mengambil detail produk.");
       }
     };
 
     fetchDetail();
+    window.scrollTo(0, 0); // Reset scroll
   }, [id]);
 
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
-
-  useEffect(() => {
-    localStorage.setItem("likes", JSON.stringify(likedProducts));
-  }, [likedProducts]);
-
   const handleAddToCart = () => {
-    if (quantity <= 0) {
-      setModalMessage("Tambahkan jumlah produk yang sesuai");
-      setShowModal(true);
-      setTimeout(() => setShowModal(false), 2500);
-      return;
-    }
+    if (quantity <= 0 || !product) return;
 
     const already = cart.find((item) => item.product.id === product.id);
     const updatedCart = already
@@ -82,9 +89,9 @@ export default function MedicineDetail() {
       : [...cart, { product, quantity }];
     setCart(updatedCart);
 
-    setModalMessage(`${quantity} item berhasil ditambahkan ke keranjang`);
+    setModalMessage(`${quantity} item ditambahkan ke keranjang`);
     setShowModal(true);
-    setTimeout(() => setShowModal(false), 2500);
+    setTimeout(() => setShowModal(false), 2000);
   };
 
   const handleLikeToggle = () => {
@@ -132,29 +139,27 @@ export default function MedicineDetail() {
 
   return (
     <>
-      {/* Modal Notifikasi Pop-up */}
+      {/* Modal Notifikasi */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <div className="bg-white rounded-3xl shadow-2xl px-8 py-6 w-[90%] max-w-sm text-center animate-fade-in">
             <div className="w-14 h-14 mx-auto mb-4 flex items-center justify-center rounded-full bg-green-100 text-green-600 text-2xl">
               ✅
             </div>
-            <h3 className="text-green-700 text-xl font-bold mb-2">
-              Notifikasi
-            </h3>
+            <h3 className="text-green-700 text-xl font-bold mb-2">Notifikasi</h3>
             <p className="text-gray-700 text-sm">{modalMessage}</p>
           </div>
         </div>
       )}
 
-      {/* Full Page Loading saat Navigasi */}
+      {/* Loading saat navigasi */}
       {loadingNavigate && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center bg-white/70 backdrop-blur-sm">
           <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin" />
         </div>
       )}
 
-      {/* Konten Detail Produk */}
+      {/* Konten Detail */}
       <div className="px-4 py-10 max-w-6xl mx-auto">
         <button
           onClick={() => navigate("/medicine")}
@@ -164,7 +169,7 @@ export default function MedicineDetail() {
         </button>
 
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 md:flex overflow-hidden">
-          {/* Gambar */}
+          {/* Gambar Produk */}
           <div className="md:w-1/2 p-6 flex items-center justify-center border-r border-green-700">
             <img
               src={gambar}
@@ -173,7 +178,7 @@ export default function MedicineDetail() {
             />
           </div>
 
-          {/* Detail */}
+          {/* Detail Produk */}
           <div className="md:w-1/2 p-8 flex flex-col justify-between">
             <div>
               <h1 className="text-3xl font-bold text-green-800 mb-2">
@@ -248,7 +253,7 @@ export default function MedicineDetail() {
           </div>
         </div>
 
-        {/* Rekomendasi */}
+        {/* Rekomendasi Produk */}
         {rekomendasi.length > 0 && (
           <div className="mt-12">
             <h2 className="text-xl font-semibold text-green-800 mb-4">

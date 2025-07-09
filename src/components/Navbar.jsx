@@ -1,48 +1,49 @@
-import { BsPatchQuestionFill, BsSuitHeartFill } from "react-icons/bs";
-import { BsFillInfoCircleFill } from "react-icons/bs";
-import { BsHandbagFill } from "react-icons/bs";
-import { FaNotesMedical } from "react-icons/fa";
-import { useEffect, useState } from "react";
-import { MdRateReview } from "react-icons/md";
-import { AiFillHome } from "react-icons/ai";
 import {
-  FaSearch,
+  BsPatchQuestionFill,
+  BsSuitHeartFill,
+  BsFillInfoCircleFill,
+  BsHandbagFill,
+} from "react-icons/bs";
+import {
+  FaNotesMedical,
   FaChevronDown,
   FaPills,
   FaBriefcaseMedical,
 } from "react-icons/fa";
-import { Link, NavLink, useNavigate } from "react-router-dom";
 import { RiArticleFill } from "react-icons/ri";
+import { MdRateReview } from "react-icons/md";
+import { AiFillHome } from "react-icons/ai";
+import { useEffect, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { supabase } from "../services/supabase";
+import defaultAvatar from "../assets/avatar-default.png";
+import logo from "../assets/logoo.png";
+import slogan from "../assets/slogan.png";
 
 export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [user, setUser] = useState(null);
+  const [avatarUrl, setAvatarUrl] = useState(defaultAvatar);
+  const [cartCount, setCartCount] = useState(0);
   const navigate = useNavigate();
 
-  const toggleDropdown = () => {
-    setShowDropdown(!showDropdown);
-  };
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      const currentUser = data?.user;
+      setUser(currentUser);
+      setAvatarUrl(currentUser?.user_metadata?.avatar_url || defaultAvatar);
+    };
 
-  const handleLogout = () => {
-    // contoh logout: bisa tambahkan fungsi logout dari auth
-    console.log("Logging out...");
-    // redirect ke login (jika pakai auth)
-    navigate("/login");
-  };
+    fetchUser();
+    const { data: authListener } = supabase.auth.onAuthStateChange(() => {
+      fetchUser();
+    });
 
-  const menuClass = ({ isActive }) =>
-    `flex items-center gap-2 text-sm px-4 py-2 rounded-lg transition-colors cursor-pointer ${
-      isActive
-        ? "bg-green/10 text-green font-semibold"
-        : "text-darkgray hover:text-green hover:bg-green/5"
-    }`;
-
-  const iconClass = ({ isActive }) =>
-    `flex items-center gap-2 text-sm rounded-lg transition-colors cursor-pointer ${
-      isActive ? "text-green font-semibold" : "text-darkgray hover:text-green"
-    }`;
-
-  //badge cart
-  const [cartCount, setCartCount] = useState(0);
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     const updateCartCount = () => {
@@ -52,56 +53,98 @@ export default function Navbar() {
     };
 
     updateCartCount();
-
-    const interval = setInterval(updateCartCount, 1000); // realtime update
+    const interval = setInterval(updateCartCount, 1000);
     return () => clearInterval(interval);
   }, []);
 
+  const toggleDropdown = () => setShowDropdown(!showDropdown);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    setShowDropdown(false);
+    navigate("/login");
+  };
+
+  const menuClass = ({ isActive }) =>
+    `flex items-center gap-2 text-sm px-3 py-1.5 rounded transition-all duration-150 ${
+      isActive
+        ? "bg-green/10 text-green font-semibold"
+        : "text-darkgray hover:text-green hover:bg-green/5"
+    }`;
+
+  const iconClass = ({ isActive }) =>
+    `flex items-center text-xl transition-colors ${
+      isActive ? "text-green" : "text-darkgray hover:text-green"
+    }`;
+
   return (
-    <header id="header-container" className="bg-white shadow-sm relative">
-      {/* Top Bar */}
-      <div className="flex items-center justify-between px-6 py-4 space-x-6">
+    <header className="bg-white shadow-sm sticky top-0 z-50">
+      <div className="flex justify-between items-center px-4 lg:px-8 py-3 w-full">
         {/* Logo */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-4 w-[240px]">
           <img
-            src="https://png.pngtree.com/png-vector/20230418/ourmid/pngtree-medical-logo-vector-png-image_6713322.png"
-            alt="Apotek Kita"
-            className="w-8 h-8"
+            src={logo}
+            alt="Logo Apotek"
+            className="w-10 h-10 object-cover"
           />
-          <span className="text-xl font-bold text-green">Apotek</span>
-          <span className="text-sm font-semibold text-darkgray">Kita</span>
+
+          <img
+            src={slogan}
+            alt="Slogan Apotek"
+            className="h-12 object-contain"
+          />
         </div>
 
-        {/* Search Bar */}
-        <div className="flex flex-1 max-w-3xl mx-6">
-          <div className="inline-flex items-center bg-gray-100 rounded-l-lg px-4 py-2 border border-gray-300 whitespace-nowrap">
-            <span className="text-poppins-regular text-sm text-darkgray">
-              All Categories
-            </span>
-            <FaChevronDown className="ml-2 text-xs text-gray-500" />
+        {/* Menu Navigasi 2 Baris */}
+        <div className="flex flex-col items-center gap-1 gap-x-4 gap-y-2 text-sm px-4 pb-3 md:px-8">
+          <div className="flex gap-2 flex-wrap justify-center">
+            <NavLink to="/" className={menuClass}>
+              <AiFillHome className="text-base" />
+              Home
+            </NavLink>
+            <NavLink to="/medicine" className={menuClass}>
+              <FaPills className="text-base" />
+              Medicine
+            </NavLink>
+            <NavLink to="/medical-product" className={menuClass}>
+              <FaBriefcaseMedical className="text-base" />
+              Medical Product
+            </NavLink>
+            <NavLink to="/obat-resep" className={menuClass}>
+              <FaNotesMedical className="text-base" />
+              Obat Resep
+            </NavLink>
           </div>
-          <input
-            type="text"
-            placeholder="Search medicine, medical products"
-            className="text-poppins-regular text-sm w-full px-4 py-2 border-t border-b border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          <button className="bg-green hover:bg-darkgreen text-white px-4 rounded-r-lg">
-            <FaSearch />
-          </button>
+          <div className="flex gap-2 flex-wrap justify-center">
+            <NavLink to="/artikel" className={menuClass}>
+              <RiArticleFill className="text-base" />
+              Artikel
+            </NavLink>
+            <NavLink to="/FAQ" className={menuClass}>
+              <BsPatchQuestionFill className="text-base" />
+              FAQ
+            </NavLink>
+            <NavLink to="/review" className={menuClass}>
+              <MdRateReview className="text-base" />
+              Review
+            </NavLink>
+          </div>
         </div>
 
-        {/* Icons */}
-        <div className="flex items-center space-x-6 text-darkgray text-xl relative">
+        {/* Kanan: Ikon + Auth */}
+        <div className="w-[150px] flex items-center justify-end gap-3">
           <NavLink to="/likes" className={iconClass}>
             <BsSuitHeartFill />
           </NavLink>
-
           <NavLink to="/about" className={iconClass}>
-            <BsFillInfoCircleFill className="cursor-pointer" />
+            <BsFillInfoCircleFill />
           </NavLink>
-
-          <NavLink to="/cart" className={({ isActive }) => `relative text-xl ${iconClass({ isActive })}`}>
-            <BsHandbagFill className="cursor-pointer" />
+          <NavLink
+            to="/cart"
+            className={({ isActive }) => `relative ${iconClass({ isActive })}`}
+          >
+            <BsHandbagFill />
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                 {cartCount}
@@ -109,91 +152,59 @@ export default function Navbar() {
             )}
           </NavLink>
 
-          {/* Profile Dropdown */}
-          <div className="relative">
-            <div
-              onClick={toggleDropdown}
-              className="flex items-center space-x-2 cursor-pointer"
-            >
-              <img
-                src="https://i.pinimg.com/474x/b2/08/eb/b208eb2516ff294adef797df39010e94.jpg"
-                alt="User"
-                className="w-8 h-8 rounded-full object-cover"
-              />
-              <FaChevronDown className="text-sm" />
+          {user ? (
+            <div className="relative">
+              <div
+                onClick={toggleDropdown}
+                className="flex items-center space-x-2 cursor-pointer"
+              >
+                <img
+                  src={avatarUrl}
+                  alt="User"
+                  className="w-8 h-8 rounded-full object-cover border"
+                />
+                <FaChevronDown className="text-sm" />
+              </div>
+              {showDropdown && (
+                <ul className="absolute right-0 mt-2 w-40 bg-white border rounded-md shadow-lg z-50 text-sm">
+                  <li>
+                    <NavLink
+                      to="/profile"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      Profile
+                    </NavLink>
+                  </li>
+                  <li>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+                  </li>
+                </ul>
+              )}
             </div>
-
-            {showDropdown && (
-              <ul className="absolute right-0 mt-2 w-40 bg-white border rounded-md shadow-lg z-50 text-sm">
-                <li>
-                  <NavLink
-                    to="/profile"
-                    className="block px-4 py-2 hover:bg-gray-100"
-                  >
-                    Profile
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/login"
-                    className="block px-4 py-2 hover:bg-gray-100"
-                  >
-                    Login
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/register"
-                    className="block px-4 py-2 hover:bg-gray-100"
-                  >
-                    Register
-                  </NavLink>
-                </li>
-                <li>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
-                </li>
-              </ul>
-            )}
-          </div>
+          ) : (
+            <div className="flex gap-2">
+              <NavLink
+                to="/login"
+                className="text-sm font-medium text-green border border-green rounded-full px-4 py-1 hover:bg-green hover:text-white transition-all"
+              >
+                Login
+              </NavLink>
+              <NavLink
+                to="/register"
+                className="text-sm bg-green text-white px-4 py-1.5 rounded-full hover:bg-darkgreen transition-all"
+              >
+                Register
+              </NavLink>
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Bottom Nav Links */}
-      <nav className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm px-4 pb-3 md:px-8">
-        <NavLink to="/" className={menuClass}>
-          <AiFillHome className="text-lg" />
-          <span>Home</span>
-        </NavLink>
-        <NavLink to="/medicine" className={menuClass}>
-          <FaPills className="text-lg" />
-          <span>Medicine</span>
-        </NavLink>
-        <NavLink to="/medical-product" className={menuClass}>
-          <FaBriefcaseMedical className="text-lg" />
-          <span>Medical Product</span>
-        </NavLink>
-        <NavLink to="/obat-resep" className={menuClass}>
-          <FaNotesMedical className="text-lg" />
-          <span>Obat Resep</span>
-        </NavLink>
-        <NavLink to="/artikel" className={menuClass}>
-          <RiArticleFill className="text-lg" />
-          <span>Artikel</span>
-        </NavLink>
-        <NavLink to="/FAQ" className={menuClass}>
-          <BsPatchQuestionFill className="text-lg" />
-          <span>FAQ</span>
-        </NavLink>
-        <NavLink to="/review" className={menuClass}>
-          <MdRateReview className="text-lg" />
-          <span>Review</span>
-        </NavLink>
-      </nav>
     </header>
   );
 }

@@ -1,67 +1,91 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { supabase } from '../../services/supabase'
+
 export default function Register() {
-    return (
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [error, setError] = useState(null)
+  const navigate = useNavigate()
+
+  const handleRegister = async (e) => {
+    e.preventDefault()
+    setError(null)
+
+    if (password !== confirmPassword) {
+      setError('Password dan konfirmasi tidak sama.')
+      return
+    }
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    })
+
+    if (error) {
+      setError(error.message)
+    } else {
+      alert('Registrasi berhasil! Silakan login.')
+      navigate('/login')
+    }
+  }
+
+  return (
+    <>
+      <form onSubmit={handleRegister} className="space-y-4">
         <div>
-            <h2 className="text-2xl font-semibold text-gray-700 mb-6 text-center">
-                Create Your Account ✨
-            </h2>
-
-            <form>
-                <div className="mb-5">
-                    <label
-                        htmlFor="email"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                        Email Address
-                    </label>
-                    <input
-                        type="email"
-                        id="email"
-                        className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg shadow-sm
-                            placeholder-gray-400"
-                        placeholder="you@example.com"
-                    />
-                </div>
-
-                <div className="mb-5">
-                    <label
-                        htmlFor="password"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                        Password
-                    </label>
-                    <input
-                        type="password"
-                        id="password"
-                        className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg shadow-sm
-                            placeholder-gray-400"
-                        placeholder="********"
-                    />
-                </div>
-
-                <div className="mb-6">
-                    <label
-                        htmlFor="confirmPassword"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                        Confirm Password
-                    </label>
-                    <input
-                        type="password"
-                        id="confirmPassword"
-                        className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg shadow-sm
-                            placeholder-gray-400"
-                        placeholder="********"
-                    />
-                </div>
-
-                <button
-                    type="submit"
-                    className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4
-                        rounded-lg transition duration-300"
-                >
-                    Register
-                </button>
-            </form>
+          <label className="block mb-1 text-sm">Email</label>
+          <input
+            type="email"
+            placeholder="Masukkan email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-2 rounded bg-[#2e5b56] border text-white"
+            required
+          />
         </div>
-    )
+
+        <div>
+          <label className="block mb-1 text-sm">Password</label>
+          <input
+            type="password"
+            placeholder="Masukkan password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-2 rounded bg-[#2e5b56] border text-white"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block mb-1 text-sm">Konfirmasi Password</label>
+          <input
+            type="password"
+            placeholder="Ulangi password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="w-full px-4 py-2 rounded bg-[#2e5b56] border text-white"
+            required
+          />
+        </div>
+
+        {error && <p className="text-red-300 text-sm">{error}</p>}
+
+        <button
+          type="submit"
+          className="w-full bg-[#69d5c3] hover:bg-[#5cc0b0] text-[#1f3f3b] font-semibold py-2 rounded-lg transition"
+        >
+          Register Account
+        </button>
+      </form>
+
+      <div className="mt-6 text-sm text-gray-300 text-center">
+        Sudah punya akun?{' '}
+        <button onClick={() => navigate('/login')} className="text-[#69d5c3] hover:underline">
+          Login sekarang
+        </button>
+      </div>
+    </>
+  )
 }

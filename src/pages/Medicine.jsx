@@ -3,6 +3,7 @@ import { medicine } from "../services/medicine";
 import { BsFillExclamationDiamondFill } from "react-icons/bs";
 import { FaSearch, FaChevronDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../services/supabase";
 
 const CATEGORIES = ["Semua Kategori", "Tablet", "Sirup", "Salep", "Kapsul"];
 
@@ -11,6 +12,7 @@ export default function Medicine() {
   const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Semua Kategori");
+  const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
 
@@ -24,6 +26,13 @@ export default function Medicine() {
         setError("Gagal mengambil data dari database");
       }
     };
+
+    const fetchUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUser(data?.user || null);
+    };
+
+    fetchUser();
     fetchData();
   }, []);
 
@@ -93,7 +102,14 @@ export default function Medicine() {
             <ProductCard
               key={product.id}
               product={product}
-              onClick={() => navigate(`/medicine/${product.id}`)}
+              onClick={() => {
+                if (user) {
+                  navigate(`/medicine/${product.id}`);
+                } else {
+                  alert("Silakan login terlebih dahulu untuk melihat detail produk.");
+                  navigate("/login");
+                }
+              }}
             />
           ))}
         </div>
@@ -108,7 +124,7 @@ function ProductCard({ product, onClick }) {
   return (
     <div
       onClick={onClick}
-      className={`relative bg-white group p-6 rounded-2xl border border-gray-200 hover:border-emerald-500 shadow-md  hover:bg-emerald-50 hover:shadow-lg transition-all cursor-pointer overflow-hidden flex flex-col items-center text-center`}
+      className="relative bg-white group p-6 rounded-2xl border border-gray-200 hover:border-emerald-500 shadow-md hover:bg-emerald-50 hover:shadow-lg transition-all cursor-pointer overflow-hidden flex flex-col items-center text-center"
     >
       <img
         src={gambar}

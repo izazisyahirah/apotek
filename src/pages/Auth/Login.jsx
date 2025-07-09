@@ -1,43 +1,64 @@
-export default function Login() {
-  return (
-      <div>
-          <h2 className="text-2xl font-semibold text-gray-700 mb-6 text-center">
-              Welcome Back 👋
-          </h2>
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { supabase } from '../../services/supabase'
 
-          <form>
-              <div className="mb-5">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email Address
-                  </label>
-                  <input
-                      type="text"
-                      id="email"
-                      className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg shadow-sm
-                          placeholder-gray-400"
-                      placeholder="you@example.com"
-                  />
-              </div>
-              <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Password
-                  </label>
-                  <input
-                      type="password"
-                      id="password"
-                      className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg shadow-sm
-                          placeholder-gray-400"
-                      placeholder="********"
-                  />
-              </div>
-              <button
-                  type="submit"
-                  className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4
-                      rounded-lg transition duration-300"
-              >
-                  Login
-              </button>
-          </form>
+export default function Login() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState(null)
+  const navigate = useNavigate()
+
+  const handleLogin = async (e) => {
+    e.preventDefault()
+    setError(null)
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (error) setError('Email atau password salah.')
+    else {
+      alert('Login berhasil!')
+      navigate('/')
+    }
+  }
+
+  return (
+    <>
+      <form onSubmit={handleLogin} className="space-y-4">
+        <div>
+          <label className="block mb-1 text-sm">Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-2 rounded bg-[#2e5b56] border text-white"
+            required
+          />
+        </div>
+        <div>
+          <label className="block mb-1 text-sm">Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-2 rounded bg-[#2e5b56] border text-white"
+            required
+          />
+        </div>
+        {error && <p className="text-red-300 text-sm">{error}</p>}
+        <button
+          type="submit"
+          className="w-full bg-[#69d5c3] hover:bg-[#5cc0b0] text-[#1f3f3b] font-semibold py-2 rounded-lg transition"
+        >
+          Login
+        </button>
+      </form>
+
+      <div className="mt-6 text-sm text-gray-300 text-center">
+        Belum punya akun?{' '}
+        <button onClick={() => navigate('/register')} className="text-[#69d5c3] hover:underline">
+          Daftar sekarang
+        </button>
       </div>
+    </>
   )
 }

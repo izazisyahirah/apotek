@@ -1,49 +1,43 @@
 import { useEffect, useState } from "react";
+import { supabase } from "../services/supabase";
 import { Link } from "react-router-dom";
-import { supabase } from "../services/supabase"; 
 
 export default function LikedProducts() {
+  const [userEmail, setUserEmail] = useState("");
   const [liked, setLiked] = useState([]);
 
   useEffect(() => {
-    const fetchLikedProducts = async () => {
-      try {
-        const likedIds = JSON.parse(localStorage.getItem("likes")) || [];
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) setUserEmail(user.email);
+    });
+  }, []);
 
-        // Pisahkan ID berdasarkan kategori
-        const medicineIds = likedIds
-          .filter((id) => id.startsWith("medicine-"))
-          .map((id) => id.replace("medicine-", ""));
-        const medicalIds = likedIds
-          .filter((id) => id.startsWith("medical-"))
-          .map((id) => id.replace("medical-", ""));
+  useEffect(() => {
+    const fetchLiked = async () => {
+      if (!userEmail) return;
 
-        // Ambil data dari Supabase
-        const [{ data: obat }, { data: alkes }] = await Promise.all([
-          supabase
-            .from("daftar_obat")
-            .select("*")
-            .in("id", medicineIds),
-          supabase
-            .from("alat_kesehatan")
-            .select("*")
-            .in("id", medicalIds),
-        ]);
+      const likedIds = JSON.parse(localStorage.getItem(`likes_${userEmail}`)) || [];
+      const medicineIds = likedIds
+        .filter((id) => id.startsWith("medicine-"))
+        .map((id) => id.replace("medicine-", ""));
+      const medicalIds = likedIds
+        .filter((id) => id.startsWith("medical-"))
+        .map((id) => id.replace("medical-", ""));
 
-        // Tambahkan penanda jenis
-        const result = [
-          ...(obat || []).map((item) => ({ ...item, type: "medicine" })),
-          ...(alkes || []).map((item) => ({ ...item, type: "medical" })),
-        ];
+      const [{ data: obat }, { data: alkes }] = await Promise.all([
+        supabase.from("daftar_obat").select("*").in("id", medicineIds),
+        supabase.from("alat_kesehatan").select("*").in("id", medicalIds),
+      ]);
 
-        setLiked(result);
-      } catch (err) {
-        console.error("Gagal mengambil data produk yang disukai:", err);
-      }
+      const result = [
+        ...(obat || []).map((item) => ({ ...item, type: "medicine" })),
+        ...(alkes || []).map((item) => ({ ...item, type: "medical" })),
+      ];
+      setLiked(result);
     };
 
-    fetchLikedProducts();
-  }, []);
+    fetchLiked();
+  }, [userEmail]);
 
   return (
     <section className="min-h-screen bg-gray-50 py-10 px-4">
@@ -69,9 +63,6 @@ export default function LikedProducts() {
                 product.type === "medical"
                   ? `/medical-product/${product.id}`
                   : `/medicine/${product.id}`;
-              const nama = product.nama_alkes || product.nama_obat;
-              const harga = product.harga_alkes || product.harga_obat;
-              const gambar = product.gambar;
 
               return (
                 <Link
@@ -80,15 +71,15 @@ export default function LikedProducts() {
                   className="bg-white p-4 rounded-xl shadow hover:shadow-lg transition text-center block"
                 >
                   <img
-                    src={gambar}
-                    alt={nama}
+                    src={product.gambar}
+                    alt={product.nama}
                     className="w-full h-36 object-contain mb-4 rounded-md"
                   />
                   <h3 className="text-green-700 font-semibold text-sm mb-1">
-                    {nama}
+                    {product.nama_obat || nama_alkes}
                   </h3>
                   <p className="text-gray-500 text-sm mb-3">
-                    Rp{parseInt(harga).toLocaleString("id-ID")}
+                    Rp{parseInt(product.harga_obat || product.harga_alkes).toLocaleString("id-ID")}
                   </p>
                 </Link>
               );

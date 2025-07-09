@@ -15,6 +15,7 @@ export default function MedicalDetail() {
   const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
+  const [rekomendasi, setRekomendasi] = useState([]);
   const [error, setError] = useState(null);
   const [showDeskripsi, setShowDeskripsi] = useState(false);
   const [quantity, setQuantity] = useState(0);
@@ -37,19 +38,22 @@ export default function MedicalDetail() {
       try {
         const data = await medicalproduct.fetchMedicalProduct();
         const found = data.find((item) => String(item.id) === id);
-
         if (!found) {
           setError("Produk tidak ditemukan");
         } else {
           setProduct(found);
+          const sameCategory = data.filter(
+            (item) => item.kategori === found.kategori && item.id !== found.id
+          );
+          setRekomendasi(sameCategory.slice(0, 4));
         }
       } catch (err) {
-        console.error(err);
         setError("Gagal mengambil data produk");
       }
     };
 
     fetchDetail();
+    window.scrollTo(0, 0);
   }, [id]);
 
   useEffect(() => {
@@ -61,13 +65,7 @@ export default function MedicalDetail() {
   }, [likedProducts]);
 
   const handleAddToCart = () => {
-    if (quantity <= 0) {
-      setModalMessage("Tambahkan jumlah produk yang sesuai");
-      setShowModal(true);
-      setTimeout(() => setShowModal(false), 2500);
-      return;
-    }
-
+    if (quantity <= 0 || !product) return;
     const already = cart.find((item) => item.product.id === product.id);
     const updatedCart = already
       ? cart.map((item) =>
@@ -77,10 +75,9 @@ export default function MedicalDetail() {
         )
       : [...cart, { product, quantity }];
     setCart(updatedCart);
-
-    setModalMessage(`${quantity} item berhasil ditambahkan ke keranjang`);
+    setModalMessage(`${quantity} item ditambahkan ke keranjang`);
     setShowModal(true);
-    setTimeout(() => setShowModal(false), 2500);
+    setTimeout(() => setShowModal(false), 2000);
   };
 
   const handleLikeToggle = () => {
@@ -106,25 +103,34 @@ export default function MedicalDetail() {
       </div>
     );
 
-  const { nama_alkes, harga_alkes, stok_alkes, gambar, kategori, deskripsi } = product;
+  const { nama_alkes, harga_alkes, stok_alkes, gambar, kategori, deskripsi } =
+    product;
+
   const isLiked = likedProducts.includes(`medical-${product.id}`);
 
   return (
     <>
+      {/* Modal Notifikasi */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-300">
-          <div className="bg-white rounded-3xl shadow-2xl px-8 py-6 w-[90%] max-w-sm text-center animate-scale-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl shadow-2xl px-8 py-6 w-[90%] max-w-sm text-center animate-fade-in">
             <div className="w-14 h-14 mx-auto mb-4 flex items-center justify-center rounded-full bg-green-100 text-green-600 text-2xl">
               ✅
             </div>
-            <h3 className="text-green-700 text-xl font-bold mb-2">
-              Notifikasi
-            </h3>
+            <h3 className="text-green-700 text-xl font-bold mb-2">Notifikasi</h3>
             <p className="text-gray-700 text-sm">{modalMessage}</p>
           </div>
         </div>
       )}
 
+      {/* Loading Navigasi */}
+      {loadingNavigate && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-white/70 backdrop-blur-sm">
+          <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
+
+      {/* Detail Produk */}
       <div className="px-4 py-10 max-w-6xl mx-auto">
         <button
           onClick={() => navigate("/medical-product")}
@@ -134,7 +140,6 @@ export default function MedicalDetail() {
         </button>
 
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 md:flex overflow-hidden">
-          {/* Gambar Produk */}
           <div className="md:w-1/2 p-6 flex items-center justify-center border-r border-green-700">
             <img
               src={gambar}
@@ -143,7 +148,6 @@ export default function MedicalDetail() {
             />
           </div>
 
-          {/* Detail Produk */}
           <div className="md:w-1/2 p-8 flex flex-col justify-between">
             <div>
               <h1 className="text-3xl font-bold text-green-800 mb-2">
@@ -159,35 +163,31 @@ export default function MedicalDetail() {
                 </li>
               </ul>
 
-              {/* Deskripsi Produk */}
-              {deskripsi && (
-                <div className="text-sm text-gray-700 mb-4">
-                  <button
-                    onClick={() => setShowDeskripsi(!showDeskripsi)}
-                    className={`flex justify-between items-center w-full font-semibold px-4 py-2 rounded-lg transition ${
-                      showDeskripsi
-                        ? "bg-green-600 text-white hover:bg-green-700"
-                        : "bg-green-50 text-green-700 hover:bg-green-100"
-                    }`}
-                  >
-                    Deskripsi Produk
-                    {showDeskripsi ? <FaChevronUp /> : <FaChevronDown />}
-                  </button>
+              <div className="text-sm text-gray-700 mb-4">
+                <button
+                  onClick={() => setShowDeskripsi(!showDeskripsi)}
+                  className={`flex justify-between items-center w-full font-semibold px-4 py-2 rounded-lg transition ${
+                    showDeskripsi
+                      ? "bg-green-600 text-white hover:bg-green-700"
+                      : "bg-green-50 text-green-700 hover:bg-green-100"
+                  }`}
+                >
+                  Deskripsi Produk
+                  {showDeskripsi ? <FaChevronUp /> : <FaChevronDown />}
+                </button>
 
-                  {showDeskripsi && (
-                    <div className="whitespace-pre-wrap text-justify mt-3 px-2 text-gray-700">
-                      {deskripsi}
-                    </div>
-                  )}
-                </div>
-              )}
+                {showDeskripsi && (
+                  <div className="whitespace-pre-wrap text-justify mt-3 px-2 text-gray-700">
+                    {deskripsi}
+                  </div>
+                )}
+              </div>
 
               <p className="text-xl font-bold text-green-700">
                 Harga: Rp {parseInt(harga_alkes).toLocaleString("id-ID")}
               </p>
             </div>
 
-            {/* Tombol Aksi */}
             <div className="mt-6 flex items-center gap-3">
               <input
                 type="number"
@@ -216,6 +216,42 @@ export default function MedicalDetail() {
             </div>
           </div>
         </div>
+
+        {/* Rekomendasi Produk */}
+        {rekomendasi.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-xl font-semibold text-green-800 mb-4">
+              Rekomendasi Alat Sejenis
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+              {rekomendasi.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => {
+                    setLoadingNavigate(true);
+                    setTimeout(() => {
+                      navigate(`/medical-product/${item.id}`);
+                      setLoadingNavigate(false);
+                    }, 700);
+                  }}
+                  className="cursor-pointer bg-white p-4 rounded-2xl shadow hover:shadow-lg transition hover:scale-105 duration-300 text-center"
+                >
+                  <img
+                    src={item.gambar}
+                    alt={item.nama_alkes}
+                    className="w-full aspect-square object-contain mb-3"
+                  />
+                  <p className="text-green-700 font-semibold text-sm mb-1">
+                    {item.nama_alkes}
+                  </p>
+                  <p className="text-gray-500 text-sm mb-2">
+                    Rp{parseInt(item.harga_alkes).toLocaleString("id-ID")}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

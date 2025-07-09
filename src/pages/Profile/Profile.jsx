@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { profile } from "../services/profile";
-import AlertBox from "../components/AlertBox";
-import LoadingSpinner from "../components/LoadingSpinner";
+import { profile } from "../../services/profile";
+import AlertBox from "../../components/AlertBox";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function Profile() {
   const [loading, setLoading] = useState(false);

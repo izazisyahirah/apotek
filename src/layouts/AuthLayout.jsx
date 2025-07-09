@@ -1,23 +1,28 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from 'react-router-dom'
+import loginImage from '../assets/medicine.png'
+import logo from '../assets/logo.jpg'
 
 export default function AuthLayout() {
+  const location = useLocation()
+  const isLogin = location.pathname === '/login'
+  const title = isLogin ? 'Login' : 'Register'
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
-        <div className="flex items-center justify-center mb-6">
-          <div id="logo" className="flex items-center space-x-2">
-            <img
-              src="https://png.pngtree.com/png-vector/20230418/ourmid/pngtree-medical-logo-vector-png-image_6713322.png"
-              alt="Apotek Kita"
-              className="w-15 h-15"
-            />
-          </div>
-        </div>
+    <div className="w-screen h-screen flex">
+      {/* Kiri: Logo + Ilustrasi */}
+      <div className="w-1/2 bg-white flex flex-col items-center justify-center p-10">
+        <img src={logo} alt="Logo Apotek" className="w-28 mb-6" />
+        <img src={loginImage} alt="Login Illustration" className="w-3/4 max-h-[400px] object-contain" />
+      </div>
+
+      {/* Kanan: Form */}
+      <div className="w-1/2 bg-[#1f3f3b] text-white flex flex-col justify-center p-12">
+        <h2 className="text-4xl font-bold mb-6">{title}</h2>
         <Outlet />
-        <p className="text-center text-sm text-gray-500 mt-6">
-          © 2025 Apotek Kita Guest Page. All rights reserved.
+        <p className="text-xs text-center mt-6 text-gray-400">
+          © 2025 Apotek Kita. Powered by React & Supabase.
         </p>
       </div>
     </div>
-  );
+  )
 }
