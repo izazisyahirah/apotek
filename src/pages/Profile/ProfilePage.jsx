@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import UpdateProfile from "./UpdateProfile";
 import RiwayatPembelian from "./RiwayatPembelian";
+import RiwayatResep from "./RiwayatResep";
 import Member from "./Member";
 import { getPelangganById } from "../../services/pelanggan";
 import { supabase } from "../../services/supabase";
@@ -58,6 +59,16 @@ export default function ProfilePage() {
         {/* Menu */}
         <div className="mt-8 space-y-3">
           <button
+            onClick={() => setActiveMenu("member")}
+            className={`w-full text-left px-4 py-2 rounded-lg font-medium ${
+              activeMenu === "member"
+                ? "bg-emerald-600 text-white"
+                : "hover:bg-emerald-100 text-gray-700"
+            }`}
+          >
+            Member
+          </button>
+          <button
             onClick={() => setActiveMenu("profil")}
             className={`w-full text-left px-4 py-2 rounded-lg font-medium ${
               activeMenu === "profil"
@@ -78,14 +89,14 @@ export default function ProfilePage() {
             Riwayat Pembelian
           </button>
           <button
-            onClick={() => setActiveMenu("member")}
+            onClick={() => setActiveMenu("resep")}
             className={`w-full text-left px-4 py-2 rounded-lg font-medium ${
-              activeMenu === "member"
+              activeMenu === "resep"
                 ? "bg-emerald-600 text-white"
                 : "hover:bg-emerald-100 text-gray-700"
             }`}
           >
-            Member
+            Riwayat Resep Obat
           </button>
         </div>
       </div>
@@ -97,6 +108,7 @@ export default function ProfilePage() {
         )}
         {activeMenu === "riwayat" && <RiwayatPembelian />}
         {activeMenu === "member" && <Member />}
+        {activeMenu === "resep" && <RiwayatResep />}
       </div>
     </div>
   );

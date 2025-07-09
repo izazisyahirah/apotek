@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { insertObatResep, getAllObatResep, uploadResepImage } from "../services/obatresep";
-import { supabase } from "../services/supabase"; //perlu untuk menghubungkan ke storage (bucket resep)
+import { supabase } from "../services/supabase";
 import AlertBox from "../components/AlertBox";
 
 export default function ObatResep() {
@@ -50,30 +50,39 @@ export default function ObatResep() {
 
     try {
       let imageUrl = null;
+      let userId = null;
+
+      // Ambil user dari Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      if (authError || !authData?.user?.email) throw new Error("User tidak ditemukan.");
+
+      const email = authData.user.email;
+
+      // Ambil pelanggan_id berdasarkan email
+      const { data: pelanggan, error: pelangganError } = await supabase
+        .from("pelanggan")
+        .select("id")
+        .eq("email", email)
+        .single();
+
+      if (pelangganError || !pelanggan?.id) throw new Error("Data pelanggan tidak ditemukan.");
+
+      const pelanggan_id = pelanggan.id;
 
       if (form.gambar) {
-        // Ambil user id dari Supabase Auth
-        let userId = null;
-        if (supabase.auth.getUser) {
-          const { data } = await supabase.auth.getUser();
-          userId = data?.user?.id;
-        } else {
-          userId = supabase.auth.user()?.id;
-        }
-        if (!userId) throw new Error("User tidak ditemukan.");
-        const path = await uploadResepImage(form.gambar, userId);
-        const { data: urlData } = supabase.storage
-          .from("resep")
-          .getPublicUrl(path);
+        const path = await uploadResepImage(form.gambar, pelanggan_id);
+        const { data: urlData } = supabase.storage.from("resep").getPublicUrl(path);
         imageUrl = urlData.publicUrl;
       }
 
       const newResep = {
         keterangan: form.keterangan,
         gambar: imageUrl,
+        pelanggan_id, // Tambahkan ini
       };
 
       await insertObatResep(newResep);
+
       setSuccess("Resep berhasil dikirim!");
       setForm({ keterangan: "", gambar: null });
       setPreview(null);

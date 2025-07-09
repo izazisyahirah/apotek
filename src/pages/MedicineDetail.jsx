@@ -79,7 +79,14 @@ export default function MedicineDetail() {
   }, [id]);
 
   const handleAddToCart = () => {
-    if (quantity <= 0 || !product || !userEmail) return;
+    if (!product || !userEmail) return;
+
+    if (quantity <= 0) {
+      setModalMessage("Jumlah produk harus lebih dari 0.");
+      setShowModal(true);
+      setTimeout(() => setShowModal(false), 2000);
+      return;
+    }
 
     const cartKey = `cart_${userEmail}`;
     const storedCart = JSON.parse(localStorage.getItem(cartKey)) || [];

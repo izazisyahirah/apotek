@@ -13,6 +13,7 @@ export default function UpdateProfile({ onProfileUpdate }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [form, setForm] = useState({
+    email: "",
     nama: "",
     alamat: "",
     phone: "",
@@ -20,7 +21,7 @@ export default function UpdateProfile({ onProfileUpdate }) {
   const [fotoFile, setFotoFile] = useState(null);
   const [fotoUrl, setFotoUrl] = useState("");
 
-  // Ambil data profil dari Supabase
+  // Ambil data pelanggan dari Supabase
   const loadProfile = async () => {
     setLoading(true);
     setError("");
@@ -35,6 +36,7 @@ export default function UpdateProfile({ onProfileUpdate }) {
       const { data: profile } = await getPelangganById(userId);
       if (profile) {
         setForm({
+          email: profile.email || "",
           nama: profile.nama || "",
           alamat: profile.alamat || "",
           phone: profile.phone || "",
@@ -62,7 +64,7 @@ export default function UpdateProfile({ onProfileUpdate }) {
     const file = e.target.files[0];
     if (file) {
       setFotoFile(file);
-      setFotoUrl(URL.createObjectURL(file)); // Preview sebelum upload
+      setFotoUrl(URL.createObjectURL(file)); // preview
     }
   };
 
@@ -82,7 +84,10 @@ export default function UpdateProfile({ onProfileUpdate }) {
       let finalFotoUrl = fotoUrl;
 
       if (fotoFile) {
-        const { url, error: uploadError } = await uploadProfilePhoto(userId, fotoFile);
+        const { url, error: uploadError } = await uploadProfilePhoto(
+          userId,
+          fotoFile
+        );
         if (uploadError) {
           setError("Gagal upload foto.");
           setLoading(false);
@@ -98,8 +103,8 @@ export default function UpdateProfile({ onProfileUpdate }) {
 
       setSuccess("Data berhasil disimpan.");
       setFotoFile(null);
-      loadProfile();
       if (onProfileUpdate) onProfileUpdate();
+      loadProfile();
     } catch {
       setError("Gagal menyimpan data.");
     } finally {
@@ -164,6 +169,16 @@ export default function UpdateProfile({ onProfileUpdate }) {
       </div>
 
       <div className="space-y-4">
+        <div>
+          <label className="block mb-1 text-gray-600">Email</label>
+          <input
+            type="email"
+            name="email"
+            value={form.email}
+            readOnly
+            className="w-full border border-gray-200 bg-gray-100 text-gray-500 px-4 py-2 rounded-lg cursor-not-allowed"
+          />
+        </div>
         <div>
           <label className="block mb-1 text-gray-600">Nama</label>
           <input

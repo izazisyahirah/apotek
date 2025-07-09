@@ -10,12 +10,13 @@ export async function uploadResepImage(file, userId) {
 }
 
 // Insert data resep ke tabel 'obatresep'
-export async function insertObatResep({ keterangan, gambar }) {
+export async function insertObatResep({ keterangan, gambar, pelanggan_id }) {
   const { data, error } = await supabase
     .from('obatresep')
-    .insert([{ keterangan, gambar }])
+    .insert([{ keterangan, gambar, pelanggan_id }])
     .select()
     .single();
+
   if (error) throw error;
   return data;
 }
