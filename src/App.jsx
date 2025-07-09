@@ -18,7 +18,7 @@ const HeroSection = React.lazy(() => import("./components/HeroSection"));
 const Services = React.lazy(() => import("./components/Services"));
 import Products, { TopProducts } from "./components/Products";
 import Review from "./pages/Review";
-import Profile from "./pages/Profile/Profile";
+import Profile from "./pages/Profile/ProfilePage";
 import ObatResep from "./pages/ObatResep";
 import LikedProducts from "./pages/LikedProducts";
 import Cart from "./pages/Cart";

@@ -125,7 +125,7 @@ export default function Checkout() {
       harga_produk: item.product.details.price,
       jumlah: item.quantity,
       total_pembelian: item.product.details.price * item.quantity,
-      alamat_tujuan: `${alamat} (${nama}, ${hp})`,
+      alamat_tujuan: alamat,
       metode_pembayaran: metodePembayaran,
       tanggal_transaksi: tanggalTransaksi,
       status_order:
@@ -164,6 +164,52 @@ export default function Checkout() {
     }
 
     localStorage.removeItem(`cart_${user.email}`);
+
+    // Hitung total checkout saat ini
+    const totalCheckout = checkoutItems.reduce(
+      (sum, item) => sum + item.quantity * item.product.details.price,
+      0
+    );
+
+    // Ambil data pelanggan sekarang
+    const { data: pelanggan, error: getPelangganError } = await supabase
+      .from("pelanggan")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+
+    if (!getPelangganError && pelanggan) {
+      const totalSebelumnya = pelanggan.total_pembelian || 0;
+      const transaksiSebelumnya = pelanggan.jumlah_transaksi || 0;
+
+      const totalBaru = totalSebelumnya + totalCheckout;
+      const trxBaru = transaksiSebelumnya + 1;
+
+      // Tentukan level segmentasi
+      let segmentasi = "Bronze";
+      if (totalBaru >= 5000000 || trxBaru >= 20) {
+        segmentasi = "Platinum";
+      } else if (totalBaru >= 2000000 || trxBaru >= 10) {
+        segmentasi = "Gold";
+      } else if (totalBaru >= 500000 || trxBaru >= 5) {
+        segmentasi = "Silver";
+      }
+
+      // Update ke tabel pelanggan
+      const { error: updateError } = await supabase
+        .from("pelanggan")
+        .update({
+          total_pembelian: totalBaru,
+          jumlah_transaksi: trxBaru,
+          segmentasi: segmentasi,
+        })
+        .eq("id", user.id);
+
+      if (updateError) {
+        console.error("Gagal update pelanggan:", updateError.message);
+      }
+    }
+
     setShowModal(true);
   };
 
