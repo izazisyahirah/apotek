@@ -7,47 +7,51 @@ export default function Cart() {
   const [cart, setCart] = useState([]);
   const [userEmail, setUserEmail] = useState(null);
 
+  // Ambil cart berdasarkan email user
   useEffect(() => {
     const fetchCart = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user?.email) return;
+      if (!user || !user.email) return;
 
       const email = user.email;
       setUserEmail(email);
 
-      const key = `cart_${email}`;
-      const rawCart = JSON.parse(localStorage.getItem(key)) || [];
+      const cartKey = `cart_${email}`;
+      const storedCart = JSON.parse(localStorage.getItem(cartKey)) || [];
 
-      const medicineIds = rawCart.filter(i => i.type === "medicine").map(i => i.id);
-      const medicalIds = rawCart.filter(i => i.type === "medical").map(i => i.id);
+      const medicineIds = storedCart
+        .filter(item => item.type === "medicine")
+        .map(item => item.id);
+      const medicalIds = storedCart
+        .filter(item => item.type === "medical")
+        .map(item => item.id);
 
-      const [{ data: meds }, { data: tools }] = await Promise.all([
+      const [{ data: medicines }, { data: medicals }] = await Promise.all([
         supabase.from("daftar_obat").select("*").in("id", medicineIds),
         supabase.from("alat_kesehatan").select("*").in("id", medicalIds),
       ]);
 
-      const combined = rawCart.map(item => {
-        const src =
-          item.type === "medicine"
-            ? meds?.find(p => p.id === item.id)
-            : tools?.find(p => p.id === item.id);
+      const updatedCart = storedCart.map((item) => {
+        const data = item.type === "medicine"
+          ? medicines.find(p => p.id === item.id)
+          : medicals.find(p => p.id === item.id);
 
-        if (!src) return null;
+        if (!data) return null;
 
         return {
           ...item,
           product: {
-            id: src.id,
-            name: src.nama_obat || src.nama_alkes,
+            id: item.id,
+            name: data.nama_obat || data.nama_alkes,
             details: {
-              price: src.harga_obat || src.harga_alkes,
-              image: src.gambar,
+              price: data.harga_obat || data.harga_alkes,
+              image: data.gambar,
             },
-          },
+          }
         };
-      }).filter(Boolean); // buang item null
+      }).filter(Boolean);
 
-      setCart(combined);
+      setCart(updatedCart);
     };
 
     fetchCart();
@@ -55,31 +59,50 @@ export default function Cart() {
 
   useEffect(() => {
     if (userEmail) {
-      const minimalCart = cart.map(item => ({
-        id: item.product.id,
-        type: item.type,
-        quantity: item.quantity
-      }));
-      localStorage.setItem(`cart_${userEmail}`, JSON.stringify(minimalCart));
+      localStorage.setItem(
+        `cart_${userEmail}`,
+        JSON.stringify(cart.map(item => ({
+          id: item.product.id,
+          type: item.type,
+          quantity: item.quantity
+        })))
+      );
+      window.dispatchEvent(new Event("cart-updated")); // 👈 update jumlah di navbar
     }
   }, [cart, userEmail]);
 
-  const handleIncrease = (id) => {
-    setCart(cart.map(item =>
-      item.product.id === id ? { ...item, quantity: item.quantity + 1 } : item
-    ));
+  const handleIncrease = (productId) => {
+    setCart(prev => {
+      const updated = prev.map(item =>
+        item.product.id === productId
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+      window.dispatchEvent(new Event("cart-updated")); //update navbar
+      return updated;
+    });
   };
 
-  const handleDecrease = (id) => {
-    setCart(cart
-      .map(item =>
-        item.product.id === id ? { ...item, quantity: item.quantity - 1 } : item
-      )
-      .filter(item => item.quantity > 0));
+  const handleDecrease = (productId) => {
+    setCart(prev => {
+      const updated = prev
+        .map(item =>
+          item.product.id === productId
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        )
+        .filter(item => item.quantity > 0);
+      window.dispatchEvent(new Event("cart-updated")); //update navbar
+      return updated;
+    });
   };
 
-  const handleRemove = (id) => {
-    setCart(cart.filter(item => item.product.id !== id));
+  const handleRemove = (productId) => {
+    setCart(prev => {
+      const updated = prev.filter(item => item.product.id !== productId);
+      window.dispatchEvent(new Event("cart-updated")); //update navbar
+      return updated;
+    });
   };
 
   const totalPrice = cart.reduce(
@@ -96,7 +119,9 @@ export default function Cart() {
 
         {cart.length === 0 ? (
           <div className="text-center bg-white p-10 rounded-2xl shadow-md">
-            <p className="text-gray-600 mb-4 text-lg">Belum ada produk di keranjang.</p>
+            <p className="text-gray-600 mb-4 text-lg">
+              Belum ada produk di keranjang.
+            </p>
             <Link
               to="/medicine"
               className="inline-block bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full shadow transition"
@@ -118,7 +143,9 @@ export default function Cart() {
                     className="w-24 h-24 object-contain rounded-md border"
                   />
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-green-800">{product.name}</h3>
+                    <h3 className="text-lg font-semibold text-green-800">
+                      {product.name}
+                    </h3>
                     <p className="text-sm text-gray-500">
                       Rp{product.details.price.toLocaleString("id-ID")} / pcs
                     </p>
@@ -129,7 +156,9 @@ export default function Cart() {
                       >
                         <FaMinus size={12} />
                       </button>
-                      <span className="font-semibold text-gray-700">{quantity}</span>
+                      <span className="font-semibold text-gray-700">
+                        {quantity}
+                      </span>
                       <button
                         onClick={() => handleIncrease(product.id)}
                         className="bg-green-100 hover:bg-green-200 text-green-700 px-2 py-1 rounded"
@@ -165,7 +194,7 @@ export default function Cart() {
                   to="/checkout"
                   className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-8 py-3 rounded-full shadow transition text-base font-semibold"
                 >
-                  Lanjut ke Pembayaran
+                  Checkout
                 </Link>
               </div>
             </div>

@@ -37,14 +37,16 @@ export default function MedicineDetail() {
   // Ambil cart & likes dari localStorage berdasarkan email
   useEffect(() => {
     if (userEmail) {
-      const storedCart = JSON.parse(localStorage.getItem(`cart_${userEmail}`)) || [];
-      const storedLikes = JSON.parse(localStorage.getItem(`likes_${userEmail}`)) || [];
+      const storedCart =
+        JSON.parse(localStorage.getItem(`cart_${userEmail}`)) || [];
+      const storedLikes =
+        JSON.parse(localStorage.getItem(`likes_${userEmail}`)) || [];
       setCart(storedCart);
       setLikedProducts(storedLikes);
     }
   }, [userEmail]);
 
-  // Simpan perubahan ke localStorage
+  // Simpan perubahan cart & likes
   useEffect(() => {
     if (userEmail) {
       localStorage.setItem(`cart_${userEmail}`, JSON.stringify(cart));
@@ -73,22 +75,36 @@ export default function MedicineDetail() {
     };
 
     fetchDetail();
-    window.scrollTo(0, 0); // Reset scroll
+    window.scrollTo(0, 0);
   }, [id]);
 
   const handleAddToCart = () => {
-    if (quantity <= 0 || !product) return;
+    if (quantity <= 0 || !product || !userEmail) return;
 
-    const already = cart.find((item) => item.product.id === product.id);
-    const updatedCart = already
-      ? cart.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        )
-      : [...cart, { product, quantity }];
+    const cartKey = `cart_${userEmail}`;
+    const storedCart = JSON.parse(localStorage.getItem(cartKey)) || [];
+
+    const existing = storedCart.find(
+      (item) => item.id === product.id && item.type === "medicine"
+    );
+
+    let updatedCart;
+    if (existing) {
+      updatedCart = storedCart.map((item) =>
+        item.id === product.id && item.type === "medicine"
+          ? { ...item, quantity: item.quantity + quantity }
+          : item
+      );
+    } else {
+      updatedCart = [
+        ...storedCart,
+        { id: product.id, type: "medicine", quantity: quantity },
+      ];
+    }
+
+    localStorage.setItem(cartKey, JSON.stringify(updatedCart));
     setCart(updatedCart);
-
+    window.dispatchEvent(new Event("cart-updated"));
     setModalMessage(`${quantity} item ditambahkan ke keranjang`);
     setShowModal(true);
     setTimeout(() => setShowModal(false), 2000);
@@ -146,20 +162,21 @@ export default function MedicineDetail() {
             <div className="w-14 h-14 mx-auto mb-4 flex items-center justify-center rounded-full bg-green-100 text-green-600 text-2xl">
               ✅
             </div>
-            <h3 className="text-green-700 text-xl font-bold mb-2">Notifikasi</h3>
+            <h3 className="text-green-700 text-xl font-bold mb-2">
+              Notifikasi
+            </h3>
             <p className="text-gray-700 text-sm">{modalMessage}</p>
           </div>
         </div>
       )}
 
-      {/* Loading saat navigasi */}
+      {/* Loading Navigasi */}
       {loadingNavigate && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center bg-white/70 backdrop-blur-sm">
           <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin" />
         </div>
       )}
 
-      {/* Konten Detail */}
       <div className="px-4 py-10 max-w-6xl mx-auto">
         <button
           onClick={() => navigate("/medicine")}
@@ -169,7 +186,6 @@ export default function MedicineDetail() {
         </button>
 
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 md:flex overflow-hidden">
-          {/* Gambar Produk */}
           <div className="md:w-1/2 p-6 flex items-center justify-center border-r border-green-700">
             <img
               src={gambar}
@@ -178,7 +194,6 @@ export default function MedicineDetail() {
             />
           </div>
 
-          {/* Detail Produk */}
           <div className="md:w-1/2 p-8 flex flex-col justify-between">
             <div>
               <h1 className="text-3xl font-bold text-green-800 mb-2">
@@ -189,8 +204,15 @@ export default function MedicineDetail() {
               </span>
 
               <ul className="text-sm text-gray-700 space-y-2 mb-6">
-                <li>
-                  <span className="font-semibold">Stok:</span> {stok_obat}
+                <li className="flex items-center gap-2">
+                  <span className="font-semibold">Stok:</span>
+                  {stok_obat > 0 ? (
+                    <span>{stok_obat}</span>
+                  ) : (
+                    <span className="text-red-600 font-semibold bg-red-100 px-2 py-1 rounded-full text-xs">
+                      Stok Habis
+                    </span>
+                  )}
                 </li>
                 <li>
                   <span className="font-semibold">Kadaluarsa:</span>{" "}
@@ -223,24 +245,42 @@ export default function MedicineDetail() {
               </p>
             </div>
 
-            {/* Tombol Aksi */}
             <div className="mt-6 flex items-center gap-3">
               <input
                 type="number"
                 min={0}
+                max={stok_obat}
                 value={quantity}
                 onChange={(e) => {
                   const val = parseInt(e.target.value);
-                  setQuantity(isNaN(val) ? 0 : val);
+                  if (!isNaN(val) && val <= stok_obat) {
+                    setQuantity(val);
+                  } else if (val > stok_obat) {
+                    setQuantity(stok_obat); // otomatis set ke maksimal
+                  } else {
+                    setQuantity(0);
+                  }
                 }}
                 className="w-24 border border-gray-300 rounded-xl px-3 py-2 text-center font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-400 appearance-auto"
+                disabled={stok_obat <= 0}
               />
 
               <button
                 onClick={handleAddToCart}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm font-medium"
+                disabled={stok_obat <= 0}
+                className={`flex-1 py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm font-medium ${
+                  stok_obat <= 0
+                    ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                    : "bg-green-600 hover:bg-green-700 text-white"
+                }`}
               >
-                <FaCartPlus /> Tambah ke Keranjang
+                {stok_obat <= 0 ? (
+                  "Stok Habis"
+                ) : (
+                  <>
+                    <FaCartPlus /> Tambah ke Keranjang
+                  </>
+                )}
               </button>
 
               <button
@@ -253,13 +293,11 @@ export default function MedicineDetail() {
           </div>
         </div>
 
-        {/* Rekomendasi Produk */}
         {rekomendasi.length > 0 && (
           <div className="mt-12">
             <h2 className="text-xl font-semibold text-green-800 mb-4">
               Rekomendasi Obat Sejenis
             </h2>
-
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
               {rekomendasi.map((item) => (
                 <div

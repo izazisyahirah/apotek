@@ -28,6 +28,7 @@ export default function Navbar() {
   const [cartCount, setCartCount] = useState(0);
   const navigate = useNavigate();
 
+  // Ambil data user dan avatar
   useEffect(() => {
     const fetchUser = async () => {
       const { data } = await supabase.auth.getUser();
@@ -35,13 +36,8 @@ export default function Navbar() {
       setUser(currentUser);
 
       if (currentUser) {
-        // Ambil data pelanggan
         const { data: pelanggan } = await getPelangganById(currentUser.id);
-        setAvatarUrl(
-          pelanggan?.foto_profil
-            ? pelanggan.foto_profil
-            : defaultAvatar
-        );
+        setAvatarUrl(pelanggan?.foto_profil || defaultAvatar);
       } else {
         setAvatarUrl(defaultAvatar);
       }
@@ -57,17 +53,25 @@ export default function Navbar() {
     };
   }, []);
 
+  // Perbarui jumlah keranjang berdasarkan email user login
   useEffect(() => {
     const updateCartCount = () => {
-      const stored = JSON.parse(localStorage.getItem("cart")) || [];
+      if (!user?.email) {
+        setCartCount(0);
+        return;
+      }
+
+      const stored = JSON.parse(localStorage.getItem(`cart_${user.email}`)) || [];
       const totalItems = stored.reduce((sum, item) => sum + item.quantity, 0);
       setCartCount(totalItems);
     };
 
     updateCartCount();
-    const interval = setInterval(updateCartCount, 1000);
-    return () => clearInterval(interval);
-  }, []);
+
+    // Dengarkan event custom dari halaman lain saat cart diperbarui
+    window.addEventListener("cart-updated", updateCartCount);
+    return () => window.removeEventListener("cart-updated", updateCartCount);
+  }, [user]);
 
   const toggleDropdown = () => setShowDropdown(!showDropdown);
 
@@ -79,13 +83,15 @@ export default function Navbar() {
   };
 
   const menuClass = ({ isActive }) =>
-    `flex items-center gap-2 text-sm px-3 py-1.5 rounded transition-all duration-150 ${isActive
-      ? "bg-green/10 text-green font-semibold"
-      : "text-darkgray hover:text-green hover:bg-green/5"
+    `flex items-center gap-2 text-sm px-3 py-1.5 rounded transition-all duration-150 ${
+      isActive
+        ? "bg-green/10 text-green font-semibold"
+        : "text-darkgray hover:text-green hover:bg-green/5"
     }`;
 
   const iconClass = ({ isActive }) =>
-    `flex items-center text-xl transition-colors ${isActive ? "text-green" : "text-darkgray hover:text-green"
+    `flex items-center text-xl transition-colors ${
+      isActive ? "text-green" : "text-darkgray hover:text-green"
     }`;
 
   return (
@@ -93,20 +99,11 @@ export default function Navbar() {
       <div className="flex justify-between items-center px-4 lg:px-8 py-3 w-full">
         {/* Logo */}
         <div className="flex items-center gap-4 w-[240px]">
-          <img
-            src={logo}
-            alt="Logo Apotek"
-            className="w-10 h-10 object-cover"
-          />
-
-          <img
-            src={slogan}
-            alt="Slogan Apotek"
-            className="h-12 object-contain"
-          />
+          <img src={logo} alt="Logo Apotek" className="w-10 h-10 object-cover" />
+          <img src={slogan} alt="Slogan Apotek" className="h-12 object-contain" />
         </div>
 
-        {/* Menu Navigasi 2 Baris */}
+        {/* Menu Navigasi */}
         <div className="flex flex-col items-center gap-1 gap-x-4 gap-y-2 text-sm px-4 pb-3 md:px-8">
           <div className="flex gap-2 flex-wrap justify-center">
             <NavLink to="/" className={menuClass}>
@@ -142,7 +139,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Kanan: Ikon + Auth */}
+        {/* Kanan: Ikon dan Auth */}
         <div className="w-[150px] flex items-center justify-end gap-3">
           <NavLink to="/likes" className={iconClass}>
             <BsSuitHeartFill />

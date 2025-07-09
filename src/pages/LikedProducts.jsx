@@ -76,7 +76,7 @@ export default function LikedProducts() {
                     className="w-full h-36 object-contain mb-4 rounded-md"
                   />
                   <h3 className="text-green-700 font-semibold text-sm mb-1">
-                    {product.nama_obat || nama_alkes}
+                    {product.nama_obat || product.nama_alkes}
                   </h3>
                   <p className="text-gray-500 text-sm mb-3">
                     Rp{parseInt(product.harga_obat || product.harga_alkes).toLocaleString("id-ID")}

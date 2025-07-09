@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { supabase } from "../services/supabase";
 import { medicalproduct } from "../services/medicalproduct";
 import {
   FaArrowLeft,
@@ -14,6 +15,7 @@ export default function MedicalDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const [userEmail, setUserEmail] = useState("");
   const [product, setProduct] = useState(null);
   const [rekomendasi, setRekomendasi] = useState([]);
   const [error, setError] = useState(null);
@@ -22,17 +24,37 @@ export default function MedicalDetail() {
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [loadingNavigate, setLoadingNavigate] = useState(false);
+  const [cart, setCart] = useState([]);
+  const [likedProducts, setLikedProducts] = useState([]);
 
-  const [cart, setCart] = useState(() => {
-    const stored = localStorage.getItem("cart");
-    return stored ? JSON.parse(stored) : [];
-  });
+  // Ambil email user login
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) setUserEmail(user.email);
+    });
+  }, []);
 
-  const [likedProducts, setLikedProducts] = useState(() => {
-    const stored = localStorage.getItem("likes");
-    return stored ? JSON.parse(stored) : [];
-  });
+  // Ambil cart & likes berdasarkan email
+  useEffect(() => {
+    if (userEmail) {
+      const storedCart =
+        JSON.parse(localStorage.getItem(`cart_${userEmail}`)) || [];
+      const storedLikes =
+        JSON.parse(localStorage.getItem(`likes_${userEmail}`)) || [];
+      setCart(storedCart);
+      setLikedProducts(storedLikes);
+    }
+  }, [userEmail]);
 
+  // Simpan cart & likes ke localStorage
+  useEffect(() => {
+    if (userEmail) {
+      localStorage.setItem(`cart_${userEmail}`, JSON.stringify(cart));
+      localStorage.setItem(`likes_${userEmail}`, JSON.stringify(likedProducts));
+    }
+  }, [cart, likedProducts, userEmail]);
+
+  // Ambil detail & rekomendasi
   useEffect(() => {
     const fetchDetail = async () => {
       try {
@@ -56,25 +78,33 @@ export default function MedicalDetail() {
     window.scrollTo(0, 0);
   }, [id]);
 
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
-
-  useEffect(() => {
-    localStorage.setItem("likes", JSON.stringify(likedProducts));
-  }, [likedProducts]);
-
   const handleAddToCart = () => {
-    if (quantity <= 0 || !product) return;
-    const already = cart.find((item) => item.product.id === product.id);
-    const updatedCart = already
-      ? cart.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        )
-      : [...cart, { product, quantity }];
+    if (quantity <= 0 || !product || !userEmail) return;
+
+    const cartKey = `cart_${userEmail}`;
+    const storedCart = JSON.parse(localStorage.getItem(cartKey)) || [];
+
+    const existing = storedCart.find(
+      (item) => item.id === product.id && item.type === "medical"
+    );
+
+    let updatedCart;
+    if (existing) {
+      updatedCart = storedCart.map((item) =>
+        item.id === product.id && item.type === "medical"
+          ? { ...item, quantity: item.quantity + quantity }
+          : item
+      );
+    } else {
+      updatedCart = [
+        ...storedCart,
+        { id: product.id, type: "medical", quantity: quantity },
+      ];
+    }
+
+    localStorage.setItem(cartKey, JSON.stringify(updatedCart));
     setCart(updatedCart);
+    window.dispatchEvent(new Event("cart-updated"));
     setModalMessage(`${quantity} item ditambahkan ke keranjang`);
     setShowModal(true);
     setTimeout(() => setShowModal(false), 2000);
@@ -105,7 +135,6 @@ export default function MedicalDetail() {
 
   const { nama_alkes, harga_alkes, stok_alkes, gambar, kategori, deskripsi } =
     product;
-
   const isLiked = likedProducts.includes(`medical-${product.id}`);
 
   return (
@@ -117,7 +146,9 @@ export default function MedicalDetail() {
             <div className="w-14 h-14 mx-auto mb-4 flex items-center justify-center rounded-full bg-green-100 text-green-600 text-2xl">
               ✅
             </div>
-            <h3 className="text-green-700 text-xl font-bold mb-2">Notifikasi</h3>
+            <h3 className="text-green-700 text-xl font-bold mb-2">
+              Notifikasi
+            </h3>
             <p className="text-gray-700 text-sm">{modalMessage}</p>
           </div>
         </div>
@@ -158,8 +189,15 @@ export default function MedicalDetail() {
               </span>
 
               <ul className="text-sm text-gray-700 space-y-2 mb-6">
-                <li>
-                  <span className="font-semibold">Stok:</span> {stok_alkes}
+                <li className="flex items-center gap-2">
+                  <span className="font-semibold">Stok:</span>
+                  {stok_alkes > 0 ? (
+                    <span>{stok_alkes}</span>
+                  ) : (
+                    <span className="text-red-600 font-semibold bg-red-100 px-2 py-1 rounded-full text-xs">
+                      Stok Habis
+                    </span>
+                  )}
                 </li>
               </ul>
 
@@ -192,19 +230,38 @@ export default function MedicalDetail() {
               <input
                 type="number"
                 min={0}
+                max={stok_alkes}
                 value={quantity}
                 onChange={(e) => {
                   const val = parseInt(e.target.value);
-                  setQuantity(isNaN(val) ? 0 : val);
+                  if (!isNaN(val) && val <= stok_alkes) {
+                    setQuantity(val);
+                  } else if (val > stok_alkes) {
+                    setQuantity(stok_alkes); // otomatis set ke maksimal
+                  } else {
+                    setQuantity(0);
+                  }
                 }}
                 className="w-24 border border-gray-300 rounded-xl px-3 py-2 text-center font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-400 appearance-auto"
+                disabled={stok_alkes <= 0}
               />
 
               <button
                 onClick={handleAddToCart}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm font-medium"
+                disabled={stok_alkes <= 0}
+                className={`flex-1 py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm font-medium ${
+                  stok_alkes <= 0
+                    ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                    : "bg-green-600 hover:bg-green-700 text-white"
+                }`}
               >
-                <FaCartPlus /> Tambah ke Keranjang
+                {stok_alkes <= 0 ? (
+                  "Stok Habis"
+                ) : (
+                  <>
+                    <FaCartPlus /> Tambah ke Keranjang
+                  </>
+                )}
               </button>
 
               <button

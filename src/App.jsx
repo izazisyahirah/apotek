@@ -24,6 +24,7 @@ import LikedProducts from "./pages/LikedProducts";
 import Cart from "./pages/Cart";
 import Article from "./pages/Article";
 import FAQ from "./pages/FAQ";
+import Checkout from "./pages/Checkout";
 const PromoCard = React.lazy(() => import("./components/PromoCard"));
 const Stats = React.lazy(() => import("./components/Stats"));
 const Banner = React.lazy(() => import("./components/Banner"));
@@ -67,6 +68,7 @@ function App() {
             <Route path="/likes" element={<LikedProducts />} />
             <Route path="/about" element={<About />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
             <Route path="/profile" element={<Profile />} />
 
             <Route path="/400" element={<Error400 />} />
