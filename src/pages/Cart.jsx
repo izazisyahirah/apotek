@@ -122,12 +122,20 @@ export default function Cart() {
             <p className="text-gray-600 mb-4 text-lg">
               Belum ada produk di keranjang.
             </p>
-            <Link
-              to="/medicine"
-              className="inline-block bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full shadow transition"
-            >
-              Belanja Sekarang
-            </Link>
+            <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+              <Link
+                to="/medicine"
+                className="text-center bg-green-600 hover:bg-green-700 text-white py-3 rounded-full shadow transition text-sm font-medium"
+              >
+                Jelajahi Obat
+              </Link>
+              <Link
+                to="/medical-product"
+                className="text-center bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-full shadow transition text-sm font-medium"
+              >
+                Jelajahi Alat Kesehatan
+              </Link>
+            </div>
           </div>
         ) : (
           <>

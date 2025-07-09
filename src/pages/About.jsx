@@ -1,13 +1,13 @@
 import { FiPackage, FiUsers } from "react-icons/fi";
 import { MdHealthAndSafety, MdOutlineSupportAgent } from "react-icons/md";
 import { BsCapsule, BsClockHistory } from "react-icons/bs";
-import Quotes from "../pages/Quotes"
+import Quotes from "../pages/Quotes";
 
 export default function About() {
   return (
     <div id="about-page" className="p-6 md:p-12 bg-gray-50">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-nunito-bold text-center text-darkgreen mb-4">
+        <h2 className="text-3xl font-bold text-emerald-700 text-center mb-6">
           Tentang Kami
         </h2>
         <p className="text-center text-gray-600 text-sm font-poppins-regular max-w-xl mx-auto mb-10">
@@ -48,8 +48,13 @@ export default function About() {
                   label: "Alat Medis Lengkap",
                 },
                 {
-                  icon: <MdOutlineSupportAgent size={20} className="text-green-600" />,
-                  label: "Konsultasi Apoteker",
+                  icon: (
+                    <MdOutlineSupportAgent
+                      size={20}
+                      className="text-green-600"
+                    />
+                  ),
+                  label: "Apoteker Tersertifikasi",
                 },
                 {
                   icon: <BsClockHistory size={20} className="text-green-600" />,
@@ -67,10 +72,14 @@ export default function About() {
                 </div>
               ))}
             </div>
-
-            <button className="font-poppins-regular bg-green hover:bg-darkgreen text-white text-sm px-6 py-2 rounded transition-all duration-200">
+            <a
+              href="https://api.whatsapp.com/send?phone=6281249003900"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-poppins-regular bg-green hover:bg-darkgreen text-white text-sm px-6 py-2 rounded transition-all duration-200 inline-block"
+            >
               Hubungi Kami
-            </button>
+            </a>
           </div>
         </div>
 
@@ -78,17 +87,26 @@ export default function About() {
         <div className="mt-16 bg-white rounded-xl shadow-md p-8 grid md:grid-cols-3 gap-6 text-center">
           {[
             {
-              icon: <FiUsers size={36} className="mx-auto text-green-600 mb-2" />,
+              icon: (
+                <FiUsers size={36} className="mx-auto text-green-600 mb-2" />
+              ),
               title: "Tim Profesional",
               desc: "Apoteker dan staf ahli siap memberikan edukasi & konsultasi.",
             },
             {
-              icon: <MdHealthAndSafety size={36} className="mx-auto text-green-600 mb-2" />,
+              icon: (
+                <MdHealthAndSafety
+                  size={36}
+                  className="mx-auto text-green-600 mb-2"
+                />
+              ),
               title: "Produk Aman & Terverifikasi",
               desc: "Obat & alat kesehatan resmi BPOM dan standar WHO.",
             },
             {
-              icon: <BsCapsule size={36} className="mx-auto text-green-600 mb-2" />,
+              icon: (
+                <BsCapsule size={36} className="mx-auto text-green-600 mb-2" />
+              ),
               title: "1000+ Produk",
               desc: "Beragam kategori untuk kebutuhan harian hingga khusus.",
             },
@@ -106,7 +124,7 @@ export default function About() {
         </div>
       </div>
       {/* Quotes */}
-      <Quotes/>
+      <Quotes />
     </div>
   );
 }

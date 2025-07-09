@@ -4,7 +4,7 @@ import { supabase } from "../services/supabase";
 
 export default function Products() {
   return (
-    <div>
+    <div className="max-w-7xl mx-auto px-4">
       <NewProducts />
     </div>
   );
@@ -12,14 +12,13 @@ export default function Products() {
 
 function ProductCard({ name, price, image }) {
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden">
-      <img src={image} alt={name} className="w-full h-40 object-contain p-4" />
+    <div className="relative bg-white group p-6 rounded-2xl border border-gray-200 hover:border-emerald-500 shadow-md hover:bg-emerald-50 hover:shadow-lg transition-all cursor-pointer overflow-hidden flex flex-col items-center text-center">
+      <img src={image} alt={name} className="w-full h-full object-contain p-1" />
       <div className="px-4 pb-4">
         <h3 className="text-sm font-nunito-bold mb-1">{name}</h3>
-        <p className="text-sm font-nunito-bold text-gray-500 mb-2">Rp{price}</p>
-        <button className="w-full bg-green text-white font-nunito-bold text-sm py-1 rounded-md flex items-center justify-center gap-2 hover:bg-green-700">
-          <FaCartPlus /> Add to Cart
-        </button>
+        <p className="text-sm font-nunito-bold text-gray-500">
+          Rp{parseInt(price).toLocaleString("id-ID")}
+        </p>
       </div>
     </div>
   );
@@ -27,11 +26,11 @@ function ProductCard({ name, price, image }) {
 
 function Section({ title, products }) {
   return (
-    <section className="px-10 py-8">
+    <section className="py-8">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-nunito-bold">{title}</h2>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
         {products.map((product, idx) => (
           <ProductCard key={idx} {...product} />
         ))}
@@ -66,7 +65,7 @@ export function NewProducts() {
 
       combined.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-      const latest = combined.slice(0, 4).map((item) => ({
+      const latest = combined.slice(0, 5).map((item) => ({
         name: item.nama_obat || item.nama_alkes,
         price: item.harga_obat || item.harga_alkes,
         image: item.gambar,
@@ -82,30 +81,79 @@ export function NewProducts() {
 }
 
 export function TopProducts() {
-  const products = [
-    {
-      name: "Hospital Bed",
-      price: 109.89,
-      image:
-        "https://autodoc.id/images/stories/virtuemart/product/indofarma-sm-1117-iii.jpg",
-    },
-    {
-      name: "Walker Mobility",
-      price: 12.8,
-      image:
-        "https://images.squarespace-cdn.com/content/v1/524f0efae4b04a769202bd72/1591115812242-H0PELLQ69ESCWUVQ6D6G/6291-5F_400_A.jpg?format=1000w",
-    },
-    {
-      name: "Wheelchair",
-      price: 30.0,
-      image:
-        "https://images-cdn.ubuy.co.id/666793d954243f2a95294c04-medline-comfortable-folding-wheelchair.jpg",
-    },
-    {
-      name: "Crutches",
-      price: 24.78,
-      image: "https://www.shhc.com.au/assets/thumbL/P-12174.jpg?20200714030823",
-    },
-  ];
-  return <Section title="Top Products" products={products} />;
+  const [topProducts, setTopProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchTopProducts = async () => {
+      const { data: pembelianData, error } = await supabase
+        .from("riwayat_pembelian")
+        .select("produk_id, produk_tipe, nama_produk, harga_produk")
+        .limit(10);
+
+      if (error) {
+        console.error("Gagal ambil data pembelian:", error.message);
+        return;
+      }
+
+      const freqMap = {};
+      for (const item of pembelianData) {
+        const key = `${item.produk_tipe}-${item.produk_id}`;
+        if (!freqMap[key]) {
+          freqMap[key] = { ...item, count: 1 };
+        } else {
+          freqMap[key].count += 1;
+        }
+      }
+
+      const sorted = Object.values(freqMap).sort((a, b) => b.count - a.count);
+      const top5 = sorted.slice(0, 5);
+
+      const detailPromises = top5.map(async (item) => {
+        try {
+          if (item.produk_tipe === "obat") {
+            const { data } = await supabase
+              .from("daftar_obat")
+              .select("gambar")
+              .eq("id", item.produk_id)
+              .single();
+
+            return {
+              name: item.nama_produk,
+              price: item.harga_produk,
+              image: data?.gambar || "/placeholder-obat.png",
+            };
+          }
+
+          if (item.produk_tipe === "alkes" || item.produk_tipe === "alat kesehatan") {
+            const { data } = await supabase
+              .from("alat_kesehatan")
+              .select("gambar")
+              .eq("id", item.produk_id)
+              .single();
+
+            return {
+              name: item.nama_produk,
+              price: item.harga_produk,
+              image: data?.gambar || "/placeholder-alkes.png",
+            };
+          }
+
+          return null;
+        } catch (e) {
+          console.error("Gagal ambil detail produk:", e);
+          return null;
+        }
+      });
+
+      const results = await Promise.all(detailPromises);
+      const filtered = results.filter((item) => item !== null);
+      setTopProducts(filtered);
+    };
+
+    fetchTopProducts();
+  }, []);
+
+  return <div className="max-w-7xl mx-auto px-4">
+      <Section title="Top Products" products={topProducts} />
+    </div>;
 }

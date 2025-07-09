@@ -1,47 +1,68 @@
-import { FaTag, FaTruck, FaUserMd, FaStethoscope, FaChevronRight } from "react-icons/fa";
+import {
+  FaTag,
+  FaTruck,
+  FaUserMd,
+  FaStethoscope,
+} from "react-icons/fa";
 
 export default function Services() {
-    return (
-        <div id="service-highlights-container">
-            <div id="service-highlights-grid" className="p-5 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                
-                {/* Get 25% OFF */}
-                <div className="flex justify-between items-center bg-softgreen rounded-xl p-4 hover:shadow-md transition">
-                    <div className="flex items-center space-x-2">
-                        <FaTag className="text-xl" />
-                        <div className="text-xl font-nunito-bold">Get 25%<br />OFF</div>
-                    </div>
-                    <FaChevronRight className="text-darkgray text-sm" />
-                </div>
+  return (
+    <div id="service-highlights-container">
+      <div className="p-5 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-7xl mx-auto">
 
-                {/* Free Home Delivery */}
-                <div className="flex justify-between items-center bg-cream rounded-xl p-4 hover:shadow-md transition">
-                    <div className="flex items-center space-x-2">
-                        <FaTruck className="text-xl" />
-                        <div className="text-xl font-nunito-bold">Free Home<br />Delivery</div>
-                    </div>
-                    <FaChevronRight className="text-darkgray text-sm" />
-                </div>
-
-                {/* Doctor's Appointment */}
-                <div className="flex justify-between items-center bg-lime rounded-xl p-4 hover:shadow-md transition">
-                    <div className="flex items-center space-x-2">
-                        <FaUserMd className="text-xl" />
-                        <div className="text-xl font-nunito-bold">Doctor's<br />Appointment</div>
-                    </div>
-                    <FaChevronRight className="text-darkgray text-sm" />
-                </div>
-
-                {/* Health Advice */}
-                <div className="flex justify-between items-center bg-softpurple rounded-xl p-4 hover:shadow-md transition">
-                    <div className="flex items-center space-x-2">
-                        <FaStethoscope className="text-xl" />
-                        <div className="text-xl font-nunito-bold">Health<br />Advice</div>
-                    </div>
-                    <FaChevronRight className="text-darkgray text-sm" />
-                </div>
-
+        {/* Promo Hingga 25% */}
+        <div className="flex flex-col justify-between bg-softgreen rounded-xl p-4 hover:shadow-md transition">
+          <div className="flex items-center space-x-3 mb-2">
+            <FaTag className="text-2xl" />
+            <div className="text-xl font-nunito-bold leading-tight">
+              Promo Hingga 25%
             </div>
+          </div>
+          <p className="text-sm text-gray-700">
+            Dapatkan diskon menarik untuk produk pilihan setiap minggu.
+          </p>
         </div>
-    );
+
+        {/* Pengiriman Khusus Pekanbaru */}
+        <div className="flex flex-col justify-between bg-cream rounded-xl p-4 hover:shadow-md transition">
+          <div className="flex items-center space-x-3 mb-2">
+            <FaTruck className="text-2xl" />
+            <div className="text-xl font-nunito-bold leading-tight">
+              Gratis Pengiriman
+            </div>
+          </div>
+          <p className="text-sm text-gray-700">
+            Layanan cepat & terpercaya langsung ke alamat Anda di Pekanbaru.
+          </p>
+        </div>
+
+        {/* Tim Apoteker Handal */}
+        <div className="flex flex-col justify-between bg-lime rounded-xl p-4 hover:shadow-md transition">
+          <div className="flex items-center space-x-3 mb-2">
+            <FaUserMd className="text-2xl" />
+            <div className="text-xl font-nunito-bold leading-tight">
+              Tim Apoteker Tersertifikasi
+            </div>
+          </div>
+          <p className="text-sm text-gray-700">
+            Layanan obat Anda ditangani langsung oleh tenaga farmasi profesional.
+          </p>
+        </div>
+
+        {/* Edukasi Kesehatan */}
+        <div className="flex flex-col justify-between bg-softpurple rounded-xl p-4 hover:shadow-md transition">
+          <div className="flex items-center space-x-3 mb-2">
+            <FaStethoscope className="text-2xl" />
+            <div className="text-xl font-nunito-bold leading-tight">
+              Edukasi Kesehatan
+            </div>
+          </div>
+          <p className="text-sm text-gray-700">
+            Temukan info penting tentang obat & tips hidup sehat setiap hari.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  );
 }

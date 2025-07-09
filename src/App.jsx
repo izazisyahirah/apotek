@@ -25,7 +25,7 @@ import Cart from "./pages/Cart";
 import Article from "./pages/Article";
 import FAQ from "./pages/FAQ";
 import Checkout from "./pages/Checkout";
-const PromoCard = React.lazy(() => import("./components/PromoCard"));
+const PromoCard = React.lazy(() => import("./components/ReviewCard"));
 const Stats = React.lazy(() => import("./components/Stats"));
 const Banner = React.lazy(() => import("./components/Banner"));
 const Blog = React.lazy(() => import("./components/Blog"));
@@ -48,10 +48,10 @@ function App() {
                   <HeroSection />
                   <Services />
                   <Products />
-                  <PromoCard />
+                  <Banner />
                   <TopProducts />
                   <Stats />
-                  <Banner />
+                  <PromoCard />
                   <Blog />
                 </>
               }

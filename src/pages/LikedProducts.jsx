@@ -16,7 +16,8 @@ export default function LikedProducts() {
     const fetchLiked = async () => {
       if (!userEmail) return;
 
-      const likedIds = JSON.parse(localStorage.getItem(`likes_${userEmail}`)) || [];
+      const likedIds =
+        JSON.parse(localStorage.getItem(`likes_${userEmail}`)) || [];
       const medicineIds = likedIds
         .filter((id) => id.startsWith("medicine-"))
         .map((id) => id.replace("medicine-", ""));
@@ -48,13 +49,21 @@ export default function LikedProducts() {
 
         {liked.length === 0 ? (
           <div className="text-center bg-white p-10 rounded-xl shadow-md text-gray-600">
-            <p className="text-lg mb-4">Belum ada produk yang kamu like.</p>
-            <Link
-              to="/medicine"
-              className="inline-block bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full shadow transition"
-            >
-              Jelajahi Produk
-            </Link>
+            <p className="text-lg mb-6">Belum ada produk yang kamu sukai.</p>
+            <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+              <Link
+                to="/medicine"
+                className="text-center bg-green-600 hover:bg-green-700 text-white py-3 rounded-full shadow transition text-sm font-medium"
+              >
+                Jelajahi Obat
+              </Link>
+              <Link
+                to="/medical-product"
+                className="text-center bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-full shadow transition text-sm font-medium"
+              >
+                Jelajahi Alat Kesehatan
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
@@ -68,7 +77,7 @@ export default function LikedProducts() {
                 <Link
                   to={url}
                   key={`${product.type}-${product.id}`}
-                  className="bg-white p-4 rounded-xl shadow hover:shadow-lg transition text-center block"
+                  className="relative bg-white group p-6 rounded-2xl border border-gray-200 hover:border-emerald-500 shadow-md hover:bg-emerald-50 hover:shadow-lg transition-all cursor-pointer overflow-hidden flex flex-col items-center text-center"
                 >
                   <img
                     src={product.gambar}
@@ -79,7 +88,10 @@ export default function LikedProducts() {
                     {product.nama_obat || product.nama_alkes}
                   </h3>
                   <p className="text-gray-500 text-sm mb-3">
-                    Rp{parseInt(product.harga_obat || product.harga_alkes).toLocaleString("id-ID")}
+                    Rp
+                    {parseInt(
+                      product.harga_obat || product.harga_alkes
+                    ).toLocaleString("id-ID")}
                   </p>
                 </Link>
               );
