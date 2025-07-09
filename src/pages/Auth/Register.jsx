@@ -1,11 +1,15 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../services/supabase'
+import { insertPelanggan } from '../../services/pelanggan'
 
 export default function Register() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [nama, setNama] = useState('')
+  const [alamat, setAlamat] = useState('')
+  const [phone, setPhone] = useState('')
   const [error, setError] = useState(null)
   const navigate = useNavigate()
 
@@ -18,7 +22,7 @@ export default function Register() {
       return
     }
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     })
@@ -26,6 +30,17 @@ export default function Register() {
     if (error) {
       setError(error.message)
     } else {
+      // Tambahkan pelanggan ke tabel pelanggan
+      const user = data.user
+      if (user) {
+        await insertPelanggan({
+          id: user.id,
+          email: user.email,
+          nama,
+          alamat,
+          phone
+        })
+      }
       alert('Registrasi berhasil! Silakan login.')
       navigate('/login')
     }
@@ -34,6 +49,39 @@ export default function Register() {
   return (
     <>
       <form onSubmit={handleRegister} className="space-y-4">
+        <div>
+          <label className="block mb-1 text-sm">Nama</label>
+          <input
+            type="text"
+            placeholder="Masukkan nama"
+            value={nama}
+            onChange={(e) => setNama(e.target.value)}
+            className="w-full px-4 py-2 rounded bg-[#2e5b56] border text-white"
+            required
+          />
+        </div>
+        <div>
+          <label className="block mb-1 text-sm">Alamat</label>
+          <input
+            type="text"
+            placeholder="Masukkan alamat"
+            value={alamat}
+            onChange={(e) => setAlamat(e.target.value)}
+            className="w-full px-4 py-2 rounded bg-[#2e5b56] border text-white"
+            required
+          />
+        </div>
+        <div>
+          <label className="block mb-1 text-sm">No. Telepon</label>
+          <input
+            type="text"
+            placeholder="Masukkan nomor telepon"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="w-full px-4 py-2 rounded bg-[#2e5b56] border text-white"
+            required
+          />
+        </div>
         <div>
           <label className="block mb-1 text-sm">Email</label>
           <input

@@ -19,6 +19,7 @@ import { supabase } from "../services/supabase";
 import defaultAvatar from "../assets/avatar-default.png";
 import logo from "../assets/logoo.png";
 import slogan from "../assets/slogan.png";
+import { getPelangganById } from "../services/pelanggan";
 
 export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -32,7 +33,18 @@ export default function Navbar() {
       const { data } = await supabase.auth.getUser();
       const currentUser = data?.user;
       setUser(currentUser);
-      setAvatarUrl(currentUser?.user_metadata?.avatar_url || defaultAvatar);
+
+      if (currentUser) {
+        // Ambil data pelanggan
+        const { data: pelanggan } = await getPelangganById(currentUser.id);
+        setAvatarUrl(
+          pelanggan?.foto_profil
+            ? pelanggan.foto_profil
+            : defaultAvatar
+        );
+      } else {
+        setAvatarUrl(defaultAvatar);
+      }
     };
 
     fetchUser();
@@ -67,15 +79,13 @@ export default function Navbar() {
   };
 
   const menuClass = ({ isActive }) =>
-    `flex items-center gap-2 text-sm px-3 py-1.5 rounded transition-all duration-150 ${
-      isActive
-        ? "bg-green/10 text-green font-semibold"
-        : "text-darkgray hover:text-green hover:bg-green/5"
+    `flex items-center gap-2 text-sm px-3 py-1.5 rounded transition-all duration-150 ${isActive
+      ? "bg-green/10 text-green font-semibold"
+      : "text-darkgray hover:text-green hover:bg-green/5"
     }`;
 
   const iconClass = ({ isActive }) =>
-    `flex items-center text-xl transition-colors ${
-      isActive ? "text-green" : "text-darkgray hover:text-green"
+    `flex items-center text-xl transition-colors ${isActive ? "text-green" : "text-darkgray hover:text-green"
     }`;
 
   return (

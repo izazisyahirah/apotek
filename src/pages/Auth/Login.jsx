@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../services/supabase'
+import { getPelangganById } from '../../services/pelanggan'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -12,10 +13,16 @@ export default function Login() {
     e.preventDefault()
     setError(null)
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) setError('Email atau password salah.')
     else {
+      // Ambil data pelanggan
+      const user = data.user
+      if (user) {
+        const { data: pelanggan, error: pelangganError } = await getPelangganById(user.id)
+        // Anda bisa simpan pelanggan ke context/state jika perlu
+      }
       alert('Login berhasil!')
       navigate('/')
     }

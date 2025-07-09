@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { profile } from "../../services/profile";
+import { getPelangganById, updatePelangganProfile, uploadProfilePhoto } from "../../services/pelanggan";
+import { supabase } from "../../services/supabase";
 import AlertBox from "../../components/AlertBox";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
@@ -8,30 +9,56 @@ export default function Profile() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [userProfile, setUserProfile] = useState(null);
-
   const [form, setForm] = useState({
     nama: "",
-    tanggal_lahir: "",
+    alamat: "",
+    phone: "",
   });
-
   const [isEditMode, setIsEditMode] = useState(false);
+  const [fotoFile, setFotoFile] = useState(null);
+  const [fotoUrl, setFotoUrl] = useState("");
+
+  // Ambil user id dari Supabase Auth
+  const getUserId = () => {
+    const user = supabase.auth.getUser ? supabase.auth.getUser() : supabase.auth.user();
+    if (user && user.id) return user.id;
+    if (user && user.data && user.data.user) return user.data.user.id;
+    return null;
+  };
 
   const loadProfile = async () => {
     try {
       setLoading(true);
-      const data = await profile.fetchProfile();
-      if (data.length > 0) {
-        setUserProfile(data[0]);
-        setForm({
-          nama: data[0].nama,
-          tanggal_lahir: data[0].tanggal_lahir,
-        });
+      setError("");
+      setSuccess("");
+      let userId = null;
+      if (supabase.auth.getUser) {
+        const { data } = await supabase.auth.getUser();
+        userId = data?.user?.id;
       } else {
+        userId = supabase.auth.user()?.id;
+      }
+      if (!userId) {
+        setError("User tidak ditemukan. Silakan login ulang.");
+        return;
+      }
+      const { data, error } = await getPelangganById(userId);
+      if (error || !data) {
+        setError("Data profil tidak ditemukan.");
         setUserProfile(null);
-        setForm({ nama: "", tanggal_lahir: "" });
+        setForm({ nama: "", alamat: "", phone: "" });
+        setFotoUrl("");
+      } else {
+        setUserProfile(data);
+        setForm({
+          nama: data.nama || "",
+          alamat: data.alamat || "",
+          phone: data.phone || "",
+        });
+        setFotoUrl(data.foto_profil || "");
       }
     } catch {
-      setError("Lengkapi data diri");
+      setError("Gagal memuat data profil.");
     } finally {
       setLoading(false);
     }
@@ -39,6 +66,7 @@ export default function Profile() {
 
   useEffect(() => {
     loadProfile();
+    // eslint-disable-next-line
   }, []);
 
   const handleChange = (e) => {
@@ -50,32 +78,26 @@ export default function Profile() {
     e.preventDefault();
     try {
       setLoading(true);
-      if (userProfile && isEditMode) {
-        await profile.updateProfile(userProfile.id, form);
-        setSuccess("Profil berhasil diperbarui.");
-      } else {
-        await profile.createProfile(form);
-        setSuccess("Profil berhasil ditambahkan.");
+      setError("");
+      setSuccess("");
+      let newFotoUrl = fotoUrl;
+      if (fotoFile) {
+        const { url, error: uploadError } = await uploadProfilePhoto(userProfile.id, fotoFile);
+        if (uploadError) {
+          setError("Gagal upload foto profil.");
+          setLoading(false);
+          return;
+        }
+        newFotoUrl = url;
       }
+      await updatePelangganProfile(userProfile.id, { ...form, foto_profil: newFotoUrl });
+      setFotoUrl(newFotoUrl);
+      setSuccess("Profil berhasil diperbarui.");
       setIsEditMode(false);
+      setFotoFile(null);
       loadProfile();
     } catch {
       setError("Gagal menyimpan data.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!confirm("Yakin ingin menghapus profil ini?")) return;
-    try {
-      setLoading(true);
-      await profile.deleteProfile(userProfile.id);
-      setUserProfile(null);
-      setForm({ nama: "", tanggal_lahir: "" });
-      setSuccess("Profil berhasil dihapus.");
-    } catch {
-      setError("Gagal menghapus profil.");
     } finally {
       setLoading(false);
     }
@@ -91,18 +113,23 @@ export default function Profile() {
       {success && <AlertBox type="success">{success}</AlertBox>}
       {loading && <LoadingSpinner text="Memuat data..." />}
 
-      {!loading && (
+      {!loading && userProfile && (
         <>
+          {fotoUrl && (
+            <div className="mb-4 flex justify-center">
+              <img
+                src={fotoUrl}
+                alt="Foto Profil"
+                className="w-32 h-32 rounded-full object-cover border"
+              />
+            </div>
+          )}
           <form
             onSubmit={handleSubmit}
             className="bg-white p-6 rounded-2xl shadow-md space-y-4"
           >
             <h2 className="text-xl font-semibold text-gray-800">
-              {userProfile
-                ? isEditMode
-                  ? "Edit Profil"
-                  : "Detail Profil"
-                : "Tambah Profil"}
+              {isEditMode ? "Edit Profil" : "Detail Profil"}
             </h2>
 
             <div>
@@ -113,67 +140,79 @@ export default function Profile() {
                 value={form.nama}
                 onChange={handleChange}
                 required
-                disabled={!isEditMode && userProfile}
+                disabled={!isEditMode}
                 className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-gray-100"
               />
             </div>
-
             <div>
-              <label className="block text-gray-700 mb-1">Tanggal Lahir</label>
+              <label className="block text-gray-700 mb-1">Alamat</label>
               <input
-                type="date"
-                name="tanggal_lahir"
-                value={form.tanggal_lahir}
+                type="text"
+                name="alamat"
+                value={form.alamat}
                 onChange={handleChange}
                 required
-                disabled={!isEditMode && userProfile}
+                disabled={!isEditMode}
                 className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-gray-100"
               />
             </div>
-
-            {(!userProfile || isEditMode) && (
+            <div>
+              <label className="block text-gray-700 mb-1">No. Telepon</label>
+              <input
+                type="text"
+                name="phone"
+                value={form.phone}
+                onChange={handleChange}
+                required
+                disabled={!isEditMode}
+                className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-gray-100"
+              />
+            </div>
+            {isEditMode && (
+              <div>
+                <label className="block text-gray-700 mb-1">Foto Profil</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={e => setFotoFile(e.target.files[0])}
+                  className="w-full"
+                />
+              </div>
+            )}
+            {isEditMode && (
               <div className="gap-3 grid grid-cols-2">
                 <button
                   type="submit"
                   className="px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700"
                 >
-                  {userProfile ? "Simpan Perubahan" : "Simpan Profil"}
+                  Simpan Perubahan
                 </button>
-                {userProfile && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsEditMode(false);
-                      setForm({
-                        nama: userProfile.nama,
-                        tanggal_lahir: userProfile.tanggal_lahir,
-                      });
-                    }}
-                    className="px-6 py-3 bg-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-400"
-                  >
-                    Batal
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsEditMode(false);
+                    setForm({
+                      nama: userProfile.nama,
+                      alamat: userProfile.alamat,
+                      phone: userProfile.phone,
+                    });
+                    setFotoFile(null);
+                  }}
+                  className="px-6 py-3 bg-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-400"
+                >
+                  Batal
+                </button>
               </div>
             )}
           </form>
-
-          {/* tombol Edit & Hapus dipisah di luar form */}
-          {userProfile && !isEditMode && (
-            <div className="gap-3 mt-4 grid grid-cols-2">
+          {!isEditMode && (
+            <div className="gap-3 mt-4 grid grid-cols-1">
               <button
                 type="button"
                 onClick={() => setIsEditMode(true)}
                 className="px-6 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-700"
               >
                 Edit
-              </button>
-              <button
-                type="button"
-                onClick={handleDelete}
-                className="px-6 py-3 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-700"
-              >
-                Hapus
               </button>
             </div>
           )}
