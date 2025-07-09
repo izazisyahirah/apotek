@@ -84,7 +84,7 @@ export default function ReviewPage() {
       {error && <AlertBox type="error">{error}</AlertBox>}
       {success && <AlertBox type="success">{success}</AlertBox>}
 
-      <div className="bg-white rounded-2xl shadow-lg p-6">
+      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
         <h3 className="text-xl font-semibold text-gray-800 mb-4">
           Tambahkan Review Baru
         </h3>
@@ -131,46 +131,6 @@ export default function ReviewPage() {
             {loading ? "Mengirim..." : "Kirim Review"}
           </button>
         </form>
-      </div>
-
-      <div className="mt-10 bg-white rounded-2xl shadow-lg overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-800">
-            Daftar Review ({reviews.length})
-          </h3>
-        </div>
-
-        {loading && <LoadingSpinner text="Memuat data review..." />}
-
-        {!loading && reviews.length === 0 && !error && (
-          <EmptyState text="Belum ada review pelanggan." />
-        )}
-
-        {!loading && reviews.length > 0 && (
-          <GenericTable
-            columns={["#", "Rating", "Keterangan", "Aksi"]}
-            data={reviews}
-            renderRow={(item, index) => (
-              <>
-                <td className="px-6 py-4 text-gray-700 font-medium">{index + 1}</td>
-                <td className="px-6 py-4 text-yellow-500 font-semibold">{item.rating} ★</td>
-                <td className="px-6 py-4 text-gray-600 max-w-xs truncate">
-                  {item.keterangan}
-                </td>
-                <td className="px-6 py-4">
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    disabled={loading}
-                    className="text-red-500 hover:text-red-700 transition-colors"
-                    title="Hapus review"
-                  >
-                    <AiFillDelete className="text-2xl" />
-                  </button>
-                </td>
-              </>
-            )}
-          />
-        )}
       </div>
     </div>
   );

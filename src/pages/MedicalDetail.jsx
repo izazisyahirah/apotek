@@ -1,59 +1,222 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import medicalData from "../data/medical.json";
+import { medicalproduct } from "../services/medicalproduct";
+import {
+  FaArrowLeft,
+  FaCartPlus,
+  FaChevronDown,
+  FaChevronUp,
+  FaHeart,
+  FaRegHeart,
+} from "react-icons/fa";
 
 export default function MedicalDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const [product, setProduct] = useState(null);
   const [error, setError] = useState(null);
+  const [showDeskripsi, setShowDeskripsi] = useState(false);
+  const [quantity, setQuantity] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [loadingNavigate, setLoadingNavigate] = useState(false);
+
+  const [cart, setCart] = useState(() => {
+    const stored = localStorage.getItem("cart");
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  const [likedProducts, setLikedProducts] = useState(() => {
+    const stored = localStorage.getItem("likes");
+    return stored ? JSON.parse(stored) : [];
+  });
 
   useEffect(() => {
-    try {
-      const timer = setTimeout(() => {
-        const found = medicalData.find((item) => String(item.id) === id);
+    const fetchDetail = async () => {
+      try {
+        const data = await medicalproduct.fetchMedicalProduct();
+        const found = data.find((item) => String(item.id) === id);
 
         if (!found) {
           setError("Produk tidak ditemukan");
-          setProduct(null);
         } else {
           setProduct(found);
-          setError(null);
         }
-      }, 300);
+      } catch (err) {
+        console.error(err);
+        setError("Gagal mengambil data produk");
+      }
+    };
 
-      return () => clearTimeout(timer);
-    } catch (err) {
-      setError("Terjadi kesalahan saat mengambil data");
-      setProduct(null);
-    }
+    fetchDetail();
   }, [id]);
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
+
+  useEffect(() => {
+    localStorage.setItem("likes", JSON.stringify(likedProducts));
+  }, [likedProducts]);
+
+  const handleAddToCart = () => {
+    if (quantity <= 0) {
+      setModalMessage("Tambahkan jumlah produk yang sesuai");
+      setShowModal(true);
+      setTimeout(() => setShowModal(false), 2500);
+      return;
+    }
+
+    const already = cart.find((item) => item.product.id === product.id);
+    const updatedCart = already
+      ? cart.map((item) =>
+          item.product.id === product.id
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
+        )
+      : [...cart, { product, quantity }];
+    setCart(updatedCart);
+
+    setModalMessage(`${quantity} item berhasil ditambahkan ke keranjang`);
+    setShowModal(true);
+    setTimeout(() => setShowModal(false), 2500);
+  };
+
+  const handleLikeToggle = () => {
+    const fullId = `medical-${product.id}`;
+    setLikedProducts((prev) =>
+      prev.includes(fullId)
+        ? prev.filter((id) => id !== fullId)
+        : [...prev, fullId]
+    );
+  };
 
   if (error)
     return (
-      <div className="text-red-600 p-4 max-w-lg mx-auto mt-10 mb-10">{error}</div>
+      <div className="text-red-600 p-4 max-w-lg mx-auto mt-10 text-center font-semibold bg-red-100 rounded-xl shadow">
+        {error}
+      </div>
     );
+
   if (!product)
     return (
-      <div className="p-4 max-w-lg mx-auto mt-10 mb-10">Loading...</div>
+      <div className="p-4 max-w-lg mx-auto mt-10 text-center text-gray-500">
+        Memuat data produk...
+      </div>
     );
 
-  const { name, details, description } = product;
+  const { nama_alkes, harga_alkes, stok_alkes, gambar, kategori, deskripsi } = product;
+  const isLiked = likedProducts.includes(`medical-${product.id}`);
 
   return (
-    <div className="max-w-lg mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg p-6 relative">
-      <img
-        src={details.image}
-        alt={name}
-        className="rounded-xl mb-4 w-full h-48 object-contain"
-      />
-      <h2 className="text-2xl font-bold mb-2 text-darkgreen">{name}</h2>
-      <p className="text-gray-600 mb-2">{description}</p>
-      <p className="text-gray-600 mb-1">
-        <span className="font-semibold">Kategori:</span> {details.category}
-      </p>
-      <p className="text-gray-800 font-semibold text-lg">
-        Harga: Rp {details.price}
-      </p>
-    </div>
+    <>
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-300">
+          <div className="bg-white rounded-3xl shadow-2xl px-8 py-6 w-[90%] max-w-sm text-center animate-scale-up">
+            <div className="w-14 h-14 mx-auto mb-4 flex items-center justify-center rounded-full bg-green-100 text-green-600 text-2xl">
+              ✅
+            </div>
+            <h3 className="text-green-700 text-xl font-bold mb-2">
+              Notifikasi
+            </h3>
+            <p className="text-gray-700 text-sm">{modalMessage}</p>
+          </div>
+        </div>
+      )}
+
+      <div className="px-4 py-10 max-w-6xl mx-auto">
+        <button
+          onClick={() => navigate("/medical-product")}
+          className="flex items-center text-green-600 mb-6 hover:underline hover:text-green-700"
+        >
+          <FaArrowLeft className="mr-2" /> Kembali ke Daftar Produk
+        </button>
+
+        <div className="bg-white rounded-3xl shadow-xl border border-gray-200 md:flex overflow-hidden">
+          {/* Gambar Produk */}
+          <div className="md:w-1/2 p-6 flex items-center justify-center border-r border-green-700">
+            <img
+              src={gambar}
+              alt={nama_alkes}
+              className="w-full max-w-[90%] aspect-square object-contain transition-transform duration-300 hover:scale-105"
+            />
+          </div>
+
+          {/* Detail Produk */}
+          <div className="md:w-1/2 p-8 flex flex-col justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-green-800 mb-2">
+                {nama_alkes}
+              </h1>
+              <span className="inline-block bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full mb-4">
+                {kategori}
+              </span>
+
+              <ul className="text-sm text-gray-700 space-y-2 mb-6">
+                <li>
+                  <span className="font-semibold">Stok:</span> {stok_alkes}
+                </li>
+              </ul>
+
+              {/* Deskripsi Produk */}
+              {deskripsi && (
+                <div className="text-sm text-gray-700 mb-4">
+                  <button
+                    onClick={() => setShowDeskripsi(!showDeskripsi)}
+                    className={`flex justify-between items-center w-full font-semibold px-4 py-2 rounded-lg transition ${
+                      showDeskripsi
+                        ? "bg-green-600 text-white hover:bg-green-700"
+                        : "bg-green-50 text-green-700 hover:bg-green-100"
+                    }`}
+                  >
+                    Deskripsi Produk
+                    {showDeskripsi ? <FaChevronUp /> : <FaChevronDown />}
+                  </button>
+
+                  {showDeskripsi && (
+                    <div className="whitespace-pre-wrap text-justify mt-3 px-2 text-gray-700">
+                      {deskripsi}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <p className="text-xl font-bold text-green-700">
+                Harga: Rp {parseInt(harga_alkes).toLocaleString("id-ID")}
+              </p>
+            </div>
+
+            {/* Tombol Aksi */}
+            <div className="mt-6 flex items-center gap-3">
+              <input
+                type="number"
+                min={0}
+                value={quantity}
+                onChange={(e) => {
+                  const val = parseInt(e.target.value);
+                  setQuantity(isNaN(val) ? 0 : val);
+                }}
+                className="w-24 border border-gray-300 rounded-xl px-3 py-2 text-center font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-400 appearance-auto"
+              />
+
+              <button
+                onClick={handleAddToCart}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm font-medium"
+              >
+                <FaCartPlus /> Tambah ke Keranjang
+              </button>
+
+              <button
+                onClick={handleLikeToggle}
+                className="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center text-red-600 text-xl shadow transition"
+              >
+                {isLiked ? <FaHeart /> : <FaRegHeart />}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
