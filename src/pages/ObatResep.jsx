@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { resep } from "../services/obatresep";
+import { insertObatResep, getAllObatResep, uploadResepImage } from "../services/obatresep";
 import { supabase } from "../services/supabase"; //perlu untuk menghubungkan ke storage (bucket resep)
 import AlertBox from "../components/AlertBox";
 
@@ -20,7 +20,7 @@ export default function ObatResep() {
 
   const loadReseps = async () => {
     try {
-      const data = await resep.fetchAll();
+      const data = await getAllObatResep();
       setReseps(data);
     } catch {
       setError("Gagal memuat data resep.");
@@ -52,17 +52,19 @@ export default function ObatResep() {
       let imageUrl = null;
 
       if (form.gambar) {
-        const filePath = `resep/${Date.now()}_${form.gambar.name}`;
-        const { data, error: uploadError } = await supabase.storage
-          .from("resep")
-          .upload(filePath, form.gambar);
-
-        if (uploadError) throw uploadError;
-
+        // Ambil user id dari Supabase Auth
+        let userId = null;
+        if (supabase.auth.getUser) {
+          const { data } = await supabase.auth.getUser();
+          userId = data?.user?.id;
+        } else {
+          userId = supabase.auth.user()?.id;
+        }
+        if (!userId) throw new Error("User tidak ditemukan.");
+        const path = await uploadResepImage(form.gambar, userId);
         const { data: urlData } = supabase.storage
           .from("resep")
-          .getPublicUrl(filePath);
-
+          .getPublicUrl(path);
         imageUrl = urlData.publicUrl;
       }
 
@@ -71,7 +73,7 @@ export default function ObatResep() {
         gambar: imageUrl,
       };
 
-      await resep.create(newResep);
+      await insertObatResep(newResep);
       setSuccess("Resep berhasil dikirim!");
       setForm({ keterangan: "", gambar: null });
       setPreview(null);
@@ -92,7 +94,7 @@ export default function ObatResep() {
 
       {error && <AlertBox type="error">{error}</AlertBox>}
       {success && <AlertBox type="success">{success}</AlertBox>}
-      
+
       <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
