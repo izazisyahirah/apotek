@@ -214,18 +214,20 @@ export default function Checkout() {
   };
 
   return (
-    <section className="min-h-screen bg-gray-50 py-10 px-4">
-      <div className="max-w-6xl mx-auto">
-        <button
-          onClick={() => navigate("/cart")}
-          className="text-green-600 hover:text-green-800 mb-4 inline-block"
-        >
-          ← Kembali ke Keranjang
-        </button>
+    <section className="bg-gray-50 py-8 px-4">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="relative flex items-center mb-10">
+          <button
+            onClick={() => navigate("/cart")}
+            className="text-green-600 hover:text-green-800 absolute left-0"
+          >
+            ← Kembali ke Keranjang
+          </button>
 
-        <h1 className="text-3xl font-bold text-green-700 text-center mb-10">
-          Checkout
-        </h1>
+          <h1 className="text-3xl font-bold text-green-700 mx-auto">
+            Checkout
+          </h1>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Ringkasan Belanja */}

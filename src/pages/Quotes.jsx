@@ -27,7 +27,7 @@ export default function Quotes() {
     );
 
   return (
-    <div className="bg-gradient-to-r from-green-50 via-white to-green-100 rounded-2xl shadow-lg p-6 md:p-10 max-w-6xl mx-auto mt-16 text-center">
+    <div className="bg-gradient-to-r from-green-50 via-white to-green-100 rounded-2xl shadow-lg p-6 md:p-10 max-w-7xl mx-auto px-4 mt-16 text-center">
       <div className="flex justify-center mb-4 text-green-600 text-4xl">
         <FaQuoteLeft />
       </div>

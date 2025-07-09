@@ -17,8 +17,8 @@ export default function Article() {
   }, []);
 
   return (
-    <div className="bg-white min-h-screen py-12 px-6 md:px-16">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-white min-h-screen py-8 px-6 md:px-16">
+      <div className="max-w-7xl mx-auto px-4">
         <h2 className="text-3xl font-bold text-emerald-700 text-center mb-6">
           Artikel Kesehatan
         </h2>

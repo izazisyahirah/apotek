@@ -23,11 +23,13 @@ export default function Review() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data?.user) {
-        setError("Gagal mendapatkan data user.");
+      const { data } = await supabase.auth.getUser();
+
+      if (!data?.user) {
+        setError("Silakan login terlebih dahulu untuk menginputkan review.");
         return;
       }
+
       setCurrentUser(data.user);
 
       const { data: pelangganData, error: pelangganError } = await supabase
@@ -42,24 +44,25 @@ export default function Review() {
         setCurrentPelangganId(pelangganData.id);
       }
     };
+
     fetchUser();
   }, []);
+
+  useEffect(() => {
+    if (currentUser) loadReviews();
+  }, [currentUser]);
 
   const loadReviews = async () => {
     try {
       setLoading(true);
       const data = await review.fetchReviews();
       setReviews(data);
-    } catch (err) {
+    } catch {
       setError("Gagal memuat review.");
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    loadReviews();
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -102,7 +105,7 @@ export default function Review() {
 
       setDataForm({ rating: "", quote: "" });
       loadReviews();
-    } catch (err) {
+    } catch {
       setError("Terjadi kesalahan saat menyimpan review.");
     } finally {
       setLoading(false);
@@ -118,7 +121,7 @@ export default function Review() {
       setLoading(true);
       await review.deleteReview(id);
       loadReviews();
-    } catch (err) {
+    } catch {
       setError("Gagal menghapus review.");
     } finally {
       setLoading(false);
@@ -132,7 +135,7 @@ export default function Review() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto py-8 px-4">
+    <div className="max-w-7xl mx-auto py-8 px-4">
       <h2 className="text-3xl font-bold text-emerald-700 text-center mb-6">
         Review Pelanggan Apotek
       </h2>
@@ -165,9 +168,7 @@ export default function Review() {
             </div>
 
             <div>
-              <label className="block text-gray-700 font-medium mb-1">
-                Quote
-              </label>
+              <label className="block text-gray-700 font-medium mb-1">Quote</label>
               <textarea
                 name="quote"
                 value={dataForm.quote}

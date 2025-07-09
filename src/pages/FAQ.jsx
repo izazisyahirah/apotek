@@ -33,11 +33,11 @@ export default function FAQ() {
   };
 
   return (
-    <section className="via-white to-emerald-100 py-16 px-6 md:px-12">
-      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-start">
+    <section className="via-white to-emerald-100 py-8 px-6 md:px-12">
+      <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-start">
         {/* Gambar */}
         <div className="flex justify-center">
-          <div className="w-100 h-112 rounded-xl overflow-hidden shadow-lg">
+          <div className="w-140 h-112 rounded-xl overflow-hidden shadow-lg">
             <img
               src="https://i.pinimg.com/736x/70/e2/a2/70e2a2894bd5773390ab3a73071c60bf.jpg"
               alt="FAQ Apotek"

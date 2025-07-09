@@ -3,6 +3,7 @@ import { medicalproduct } from "../services/medicalproduct";
 import { BsFillExclamationDiamondFill } from "react-icons/bs";
 import { FaSearch, FaChevronDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../services/supabase";
 
 const CATEGORIES = ["Semua Kategori", "Alat Ukur", "Alat Bantu", "Perawatan"];
 
@@ -11,6 +12,9 @@ export default function MedicalProduct() {
   const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Semua Kategori");
+  const [user, setUser] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
   const navigate = useNavigate();
 
@@ -24,6 +28,13 @@ export default function MedicalProduct() {
         setError("Gagal mengambil data dari database");
       }
     };
+
+    const fetchUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUser(data?.user || null);
+    };
+
+    fetchUser();
     fetchData();
   }, []);
 
@@ -37,9 +48,22 @@ export default function MedicalProduct() {
     return cocokNama && cocokKategori;
   });
 
+  const handleProductClick = (id) => {
+    if (user) {
+      navigate(`/medical-product/${id}`);
+    } else {
+      setModalMessage("Silakan login terlebih dahulu untuk melihat detail produk.");
+      setShowModal(true);
+      setTimeout(() => {
+        setShowModal(false);
+        navigate("/login");
+      }, 2000);
+    }
+  };
+
   return (
     <section className="min-h-screen bg-white py-12 px-4">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto px-4">
         {/* Search & Filter */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
           <div className="w-full max-w-6xl bg-white shadow-lg rounded-2xl border border-green-600 overflow-hidden flex flex-col md:flex-row items-stretch">
@@ -93,11 +117,24 @@ export default function MedicalProduct() {
             <ProductCard
               key={product.id}
               product={product}
-              onClick={() => navigate(`/medical-product/${product.id}`)}
+              onClick={() => handleProductClick(product.id)}
             />
           ))}
         </div>
       </div>
+
+      {/* Modal Notifikasi */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl shadow-2xl px-8 py-6 w-[90%] max-w-sm text-center animate-fade-in">
+            <div className="w-14 h-14 mx-auto mb-4 flex items-center justify-center rounded-full bg-green-100 text-green-600 text-2xl">
+              ✅
+            </div>
+            <h3 className="text-green-700 text-xl font-bold mb-2">Notifikasi</h3>
+            <p className="text-gray-700 text-sm">{modalMessage}</p>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
@@ -108,7 +145,7 @@ function ProductCard({ product, onClick }) {
   return (
     <div
       onClick={onClick}
-      className={`relative bg-white group p-6 rounded-2xl border border-gray-200 hover:border-emerald-500 shadow-md  hover:bg-emerald-50 hover:shadow-lg transition-all cursor-pointer overflow-hidden flex flex-col items-center text-center`}
+      className="relative bg-white group p-6 rounded-2xl border border-gray-200 hover:border-emerald-500 shadow-md hover:bg-emerald-50 hover:shadow-lg transition-all cursor-pointer overflow-hidden flex flex-col items-center text-center"
     >
       <img
         src={gambar}

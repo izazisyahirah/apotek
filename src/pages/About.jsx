@@ -6,7 +6,7 @@ import Quotes from "../pages/Quotes";
 export default function About() {
   return (
     <div id="about-page" className="p-6 md:p-12 bg-gray-50">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto px-4">
         <h2 className="text-3xl font-bold text-emerald-700 text-center mb-6">
           Tentang Kami
         </h2>

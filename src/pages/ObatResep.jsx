@@ -10,6 +10,7 @@ export default function ObatResep() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [user, setUser] = useState(null);
 
   const [form, setForm] = useState({
     keterangan: "",
@@ -28,7 +29,14 @@ export default function ObatResep() {
   };
 
   useEffect(() => {
-    loadReseps();
+    const checkUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data?.user) {
+        setUser(data.user);
+        loadReseps();
+      }
+    };
+    checkUser();
   }, []);
 
   const handleChange = (e) => {
@@ -50,22 +58,16 @@ export default function ObatResep() {
 
     try {
       let imageUrl = null;
-      let userId = null;
+      const email = user.email;
 
-      // Ambil user dari Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.getUser();
-      if (authError || !authData?.user?.email) throw new Error("User tidak ditemukan.");
-
-      const email = authData.user.email;
-
-      // Ambil pelanggan_id berdasarkan email
       const { data: pelanggan, error: pelangganError } = await supabase
         .from("pelanggan")
         .select("id")
         .eq("email", email)
         .single();
 
-      if (pelangganError || !pelanggan?.id) throw new Error("Data pelanggan tidak ditemukan.");
+      if (pelangganError || !pelanggan?.id)
+        throw new Error("Data pelanggan tidak ditemukan.");
 
       const pelanggan_id = pelanggan.id;
 
@@ -78,7 +80,7 @@ export default function ObatResep() {
       const newResep = {
         keterangan: form.keterangan,
         gambar: imageUrl,
-        pelanggan_id, // Tambahkan ini
+        pelanggan_id,
       };
 
       await insertObatResep(newResep);
@@ -96,7 +98,7 @@ export default function ObatResep() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4">
+    <div className="max-w-7xl mx-auto py-8 px-4">
       <h2 className="text-3xl font-bold text-emerald-700 text-center mb-6">
         Unggah Resep Dokter
       </h2>
@@ -104,50 +106,58 @@ export default function ObatResep() {
       {error && <AlertBox type="error">{error}</AlertBox>}
       {success && <AlertBox type="success">{success}</AlertBox>}
 
-      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-gray-700 font-medium mb-1">Upload Gambar Resep</label>
-            <input
-              type="file"
-              name="gambar"
-              accept="image/*"
-              onChange={handleChange}
-              disabled={loading}
-              required
-              className="block w-full text-sm text-gray-700 bg-gray-50 border border-gray-300 rounded-xl file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
-            />
-            {preview && (
-              <img
-                src={preview}
-                alt="Preview"
-                className="mt-4 max-h-64 rounded-xl shadow"
+      {!user ? (
+        <div className="bg-red-100 border border-red-300 text-red-800 text-center px-5 py-5 rounded-xl shadow-md">
+          Silakan login terlebih dahulu untuk mengunggah resep dokter.
+        </div>
+      ) : (
+        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">
+                Upload Gambar Resep
+              </label>
+              <input
+                type="file"
+                name="gambar"
+                accept="image/*"
+                onChange={handleChange}
+                disabled={loading}
+                required
+                className="block w-full text-sm text-gray-700 bg-gray-50 border border-gray-300 rounded-xl file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
               />
-            )}
-          </div>
+              {preview && (
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="mt-4 max-h-64 rounded-xl shadow"
+                />
+              )}
+            </div>
 
-          <div>
-            <label className="block font-medium">Keterangan</label>
-            <textarea
-              name="keterangan"
-              required
-              rows="3"
-              value={form.keterangan}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-xl bg-gray-50"
-              placeholder="Tuliskan informasi tambahan..."
-            />
-          </div>
+            <div>
+              <label className="block font-medium">Keterangan</label>
+              <textarea
+                name="keterangan"
+                required
+                rows="3"
+                value={form.keterangan}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-xl bg-gray-50"
+                placeholder="Tuliskan informasi tambahan..."
+              />
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl"
-          >
-            {loading ? "Mengirim..." : "Kirim Resep"}
-          </button>
-        </form>
-      </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl"
+            >
+              {loading ? "Mengirim..." : "Kirim Resep"}
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

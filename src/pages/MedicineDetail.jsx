@@ -184,7 +184,7 @@ export default function MedicineDetail() {
         </div>
       )}
 
-      <div className="px-4 py-10 max-w-6xl mx-auto">
+      <div className="px-4 py-10 max-w-7xl mx-auto">
         <button
           onClick={() => navigate("/medicine")}
           className="flex items-center text-green-600 mb-6 hover:underline hover:text-green-700"

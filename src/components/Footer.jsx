@@ -1,4 +1,4 @@
-import { FaTiktok } from "react-icons/fa"; 
+import { FaTiktok } from "react-icons/fa";
 import {
   FaMapMarkerAlt,
   FaPhoneAlt,
@@ -28,7 +28,9 @@ export default function Footer() {
           </div>
           <div className="flex items-start space-x-2">
             <FaEnvelope className="mt-1" />
-            <span className="font-poppins-regular">aptkeluarga.digital@gmail.com</span>
+            <span className="font-poppins-regular">
+              aptkeluarga.digital@gmail.com
+            </span>
           </div>
         </div>
 
@@ -52,17 +54,48 @@ export default function Footer() {
         <div className="space-y-3">
           <h3 className="font-nunito-extrabold text-lg">Ikuti Kami</h3>
           <p className="font-poppins-regular">
-            Dapatkan info promo & tips kesehatan di media sosial Apotek Keluarga.
+            Dapatkan info promo & tips kesehatan di media sosial Apotek
+            Keluarga.
           </p>
           <div className="flex space-x-4 text-white text-lg">
-            <a href="https://www.instagram.com/apotek_keluarga?igsh=MTVyaTQ5dDMxem55aQ==" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://www.instagram.com/apotek_keluarga?igsh=MTVyaTQ5dDMxem55aQ=="
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <FaInstagram className="hover:text-gray-300" />
             </a>
-            <a href="https://www.tiktok.com/@apotekkeluargaofficial" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://www.tiktok.com/@apotekkeluargaofficial"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <FaTiktok className="hover:text-gray-300" />
             </a>
-            <a href="https://youtube.com/@apotekkeluarga?si=BqZ1YxbcHsS1nwaW" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://youtube.com/@apotekkeluarga?si=BqZ1YxbcHsS1nwaW"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <FaYoutube className="hover:text-gray-300" />
+            </a>
+          </div>
+          <div className="flex justify-between gap-4 pt-6">
+            <a
+              href="https://vetra-project.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 text-center border bg-green-600 text-white py-2 rounded-xl hover:bg-green-700 transition"
+            >
+              Admin
+            </a>
+            <a
+              href="https://apotekita-pcr.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 text-center border bg-green-600 text-white py-2 rounded-xl hover:bg-green-700 transition"
+            >
+              Guest 2
             </a>
           </div>
         </div>
